@@ -23,17 +23,17 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import torch
-# from icefall.utils import str2bool
-# from lhotse import CutSet, load_manifest_lazy
-# from lhotse.dataset import (
-#     CutConcatenate,
-#     DynamicBucketingSampler,
-#     PrecomputedFeatures,
-#     SingleCutSampler,
-#     SpecAugment,
-# )
-# from lhotse.dataset.input_strategies import OnTheFlyFeatures
-# from lhotse.utils import fix_random_seed
+from icefall.utils import str2bool
+from lhotse import CutSet, load_manifest_lazy
+from lhotse.dataset import (
+    CutConcatenate,
+    DynamicBucketingSampler,
+    PrecomputedFeatures,
+    SingleCutSampler,
+    SpecAugment,
+)
+from lhotse.dataset.input_strategies import OnTheFlyFeatures
+from lhotse.utils import fix_random_seed
 from torch.utils.data import DataLoader
 
 from data.collation import get_text_token_collater
