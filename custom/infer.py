@@ -35,14 +35,14 @@ import torch
 import torchaudio
 from icefall.utils import AttributeDict, str2bool
 
-from ..data import (
+from data import (
     AudioTokenizer,
     TextTokenizer,
     tokenize_audio,
     tokenize_text,
 )
-from ..data.collation import get_text_token_collater
-from ..models import get_model
+from data.collation import get_text_token_collater
+from models import get_model
 
 
 def get_args():

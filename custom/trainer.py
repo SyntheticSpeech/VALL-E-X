@@ -62,10 +62,10 @@ from torch.cuda.amp import GradScaler
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.tensorboard import SummaryWriter
 
-from ..data import TtsDataModule
-from ..models import add_model_arguments, get_model
-from ..modules.optim import Eden, Eve, ScaledAdam
-from ..modules.scheduler import get_scheduler
+from data import TtsDataModule
+from models import add_model_arguments, get_model
+from modules.optim import Eden, Eve, ScaledAdam
+from modules.scheduler import get_scheduler
 
 LRSchedulerType = torch.optim.lr_scheduler._LRScheduler
 
