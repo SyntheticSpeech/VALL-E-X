@@ -1,8 +1,7 @@
 soundfile
 numpy
-torch
-torchvision
-torchaudio
+torch==1.13.1
+torchaudio==0.13.1
 tokenizers
 encodec
 langid
