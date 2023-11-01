@@ -322,6 +322,7 @@ def get_params() -> AttributeDict:
             "valid_interval": 10000,
             # parameters for TTS
             "env_info": get_env_info(),
+            "prepend_bos": True,
         }
     )
 
