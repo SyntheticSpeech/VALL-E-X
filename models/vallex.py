@@ -455,6 +455,7 @@ class VALLE(VALLF):
         **kwargs,
     ):
         raise NotImplementedError
+    
     def inference(
         self,
         x: torch.Tensor,
@@ -495,7 +496,8 @@ class VALLE(VALLF):
         # NOTE: x has been padded in TextTokenCollater
         text = x
         x = self.ar_text_embedding(text)
-        # Add language embedding
+
+        # Add language embedding, P A
         prompt_language_id = torch.LongTensor(np.array([self.language_ID[prompt_language]])).to(x.device)
         if isinstance(text_language, str):
             text_language_id = torch.LongTensor(np.array([self.language_ID[text_language]])).to(x.device)
@@ -519,12 +521,13 @@ class VALLE(VALLF):
         x_len = x_lens.max()
         x_attn_mask = torch.zeros((x_len, x_len), dtype=torch.bool)
 
+        # P A
         kv_cache = None
         use_kv_caching = True
-
         sum_logprobs = torch.zeros(best_of, device=y.device)  # implement batch decoding here
         x = x.repeat(best_of, 1, 1)
         y = y.repeat(best_of, 1)
+
         while True:
             y_emb = self.ar_audio_embedding(y)
             y_emb = self.ar_audio_prenet(y_emb)
@@ -548,13 +551,13 @@ class VALLE(VALLF):
                 [x_attn_mask_pad, y_attn_mask], dim=0
             ).to(y.device)
 
-
+            # P A
             if use_kv_caching and kv_cache is not None:
                 xy_pos = xy_pos[:, [-1]]
             else:
                 pass
 
-            xy_dec, kv_cache = self.ar_decoder.infer(
+            xy_dec, kv_cache = self.ar_decoder.infer( # P M
                 xy_pos,
                 mask=xy_attn_mask,
                 past_kv=kv_cache,
@@ -569,6 +572,7 @@ class VALLE(VALLF):
             samples, current_logprobs = topk_sampling(
                 logits, top_k=top_k, top_p=1, temperature=temperature
             )
+            # P A
             sum_logprobs += current_logprobs * (y[:, -1] != NUM_AUDIO_TOKENS)
             samples[y[:, -1] == NUM_AUDIO_TOKENS] = NUM_AUDIO_TOKENS
             completed = (samples[:, -1] == NUM_AUDIO_TOKENS).all()
@@ -580,6 +584,7 @@ class VALLE(VALLF):
                     raise SyntaxError(
                         "well trained model shouldn't reach here."
                     )
+                # P A
                 lengths = torch.sum(y != NUM_AUDIO_TOKENS, dim=1)
                 avg_logprobs = sum_logprobs / lengths ** length_penalty
                 # choose the best beam according to sum_logprobs
@@ -620,7 +625,7 @@ class VALLE(VALLF):
             assert text.shape[0] == 1
 
         x = self.nar_text_embedding(text)
-        # Add language embedding
+        # Add language embedding, P A
         prompt_language_id = torch.LongTensor(np.array([self.language_ID[prompt_language]])).to(x.device)
         if isinstance(text_language, str):
             text_language_id = torch.LongTensor(np.array([self.language_ID[text_language]])).to(x.device)

@@ -99,7 +99,7 @@ def make_transcript(name, wav, sr, transcript=None):
         logging.info("Transcript not given, using Whisper...")
         global whisper_model
         if whisper_model is None:
-            whisper_model = whisper.load_model("medium", download_root=os.path.join(os.getcwd(), "whisper"))
+            whisper_model = whisper.load_model("base", download_root=os.path.join(os.getcwd(), "whisper"))
         whisper_model.to(device)
         torchaudio.save(f"./prompts/{name}.wav", wav, sr)
         lang, text = transcribe_one(whisper_model, f"./prompts/{name}.wav")
