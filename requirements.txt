@@ -13,7 +13,7 @@ inflect
 cn2an
 jieba
 eng_to_ipa
-openai-whisper
+openai-whisper #openai-whisper==20230314
 matplotlib
 gradio
 nltk
