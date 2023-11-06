@@ -20,7 +20,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from icefall.utils import make_pad_mask
-# from torchmetrics.classification import MulticlassAccuracy
+from torchmetrics.classification import MulticlassAccuracy
 
 from data.input_strategies import PromptedFeatures
 from modules.embedding import SinePositionalEmbedding, TokenEmbedding
@@ -155,6 +155,14 @@ class VALLF(nn.Module):
             d_model, NUM_AUDIO_TOKENS + 1, bias=False
         )
 
+        self.ar_accuracy_metric = MulticlassAccuracy(
+            NUM_AUDIO_TOKENS + 1,
+            top_k=10,
+            average="micro",
+            multidim_average="global",
+            ignore_index=NUM_AUDIO_TOKENS,
+        )
+
         self.rng = random.Random(0)
         self.num_heads = nhead
         self.prefix_mode = prefix_mode
@@ -262,19 +270,27 @@ class VALLF(nn.Module):
                     self.nar_predict_layers[
                         j
                     ].weight = self.nar_audio_embeddings[j + 2].weight
+            
+            self.nar_accuracy_metric = MulticlassAccuracy(
+                NUM_AUDIO_TOKENS + 1,
+                top_k=10,
+                average="micro",
+                multidim_average="global",
+                ignore_index=NUM_AUDIO_TOKENS,
+            )
 
     def stage_parameters(self, stage: int = 1) -> Iterator[nn.Parameter]:
         assert stage > 0
         if stage == 1:
             for name, param in self.named_parameters():
                 if name.startswith("ar_"):
-                    print(f" AR parameter: {name}")
+                    #print(f" AR parameter: {name}")
                     yield param
 
         if stage == 2:
             for name, param in self.named_parameters():
                 if name.startswith("nar_"):
-                    print(f"NAR parameter: {name}")
+                    #print(f"NAR parameter: {name}")
                     yield param
 
     def stage_named_parameters(
