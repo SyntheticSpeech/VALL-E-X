@@ -63,7 +63,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.tensorboard import SummaryWriter
 
 from data import TtsDataModule
-from models import add_model_arguments, get_model
+from models import add_model_arguments, get_model, VALLE
 from modules.optim import Eden, Eve, ScaledAdam
 from modules.scheduler import get_scheduler
 
@@ -522,6 +522,7 @@ def compute_loss(
     audio_features_lens = batch["audio_features_lens"].to(device)
     assert audio_features.ndim == 3
 
+    print(f"enroll_x_lens {text_tokens.shape[-1]}")
     with torch.set_grad_enabled(is_training):
         predicts, loss, metrics = model(
             x=text_tokens,
@@ -846,6 +847,22 @@ def filter_short_and_long_utterances(
 
     return cuts
 
+def freeze_model(model:nn.Module):
+    # List of layers not to freeze
+    unfreeze_layer = [model.ar_predict_layers, model.nar_predict_layers]
+
+    # Iterate through the layers and freeze them
+    for layer in model.children():
+        if layer == unfreeze_layer:
+            for param in layer.parameters():
+                param.requires_grad = True
+        else:
+            for param in layer.parameters():
+                param.requires_grad = False
+
+    for name, param in model.named_parameters():
+        print(f'{name}: requires_grad={param.requires_grad}')
+
 
 def run(rank, world_size, args):
     """
@@ -909,6 +926,9 @@ def run(rank, world_size, args):
     checkpoints = load_checkpoint_if_available(
         params=params, model=model, model_avg=model_avg
     )
+
+    # freeze majority of the model
+    freeze_model(model=model)
 
     model.to(device)
     if world_size > 1:
