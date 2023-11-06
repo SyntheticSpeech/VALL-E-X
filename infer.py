@@ -41,7 +41,7 @@ from data import (
     tokenize_audio,
     tokenize_text,
 )
-from data.collation import get_text_token_collater
+from data.collation import get_text_token_collater_with_record
 from models import get_model
 
 
@@ -153,7 +153,7 @@ def main():
     if torch.cuda.is_available():
         device = torch.device("cuda", 0)
     model, text_tokens = load_model(args.checkpoint, device)
-    text_collater = get_text_token_collater(text_tokens)
+    text_collater = get_text_token_collater_with_record(text_tokens)
 
     audio_tokenizer = AudioTokenizer()
 

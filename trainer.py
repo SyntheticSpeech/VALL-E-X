@@ -1018,7 +1018,7 @@ def run(rank, world_size, args):
     if params.inf_check:
         register_inf_check_hooks(model)
 
-    if params.start_batch > 0 and checkpoints and "sampler" in checkpoints:
+    if params.start_batch > 0 and checkpoints and "sampler" in checkpoints and checkpoints["sampler"]:
         sampler_state_dict = checkpoints["sampler"]
     else:
         sampler_state_dict = None

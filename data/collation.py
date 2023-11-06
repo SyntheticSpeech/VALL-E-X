@@ -112,9 +112,20 @@ class TextTokenCollater:
 
         return tokens_batch, tokens_lens
 
-
+'''
+Plachtaa这个函数的input argument不要了, 取决于inference的时候要不要用训练数据集的symboltable
+这里并不清楚tradeoff, 选择保留两者
+'''
 def get_text_token_collater() -> TextTokenCollater:
     collater = TextTokenCollater(
         ['0'], add_bos=False, add_eos=False
+    )
+    return collater
+
+def get_text_token_collater_with_record(text_tokens_file: str) -> TextTokenCollater:
+    text_tokens_path = Path(text_tokens_file)
+    unique_tokens = SymbolTable.from_file(text_tokens_path)
+    collater = TextTokenCollater(
+        unique_tokens.symbols, add_bos=True, add_eos=True
     )
     return collater

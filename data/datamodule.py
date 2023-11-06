@@ -36,7 +36,7 @@ from lhotse.dataset.input_strategies import OnTheFlyFeatures
 from lhotse.utils import fix_random_seed
 from torch.utils.data import DataLoader
 
-from data.collation import get_text_token_collater
+from data.collation import get_text_token_collater_with_record
 from data.dataset import SpeechSynthesisDataset
 from data.fbank import get_fbank_extractor
 from data.input_strategies import PromptedPrecomputedFeatures
@@ -288,14 +288,14 @@ class TtsDataModule:
             # transforms = [PerturbSpeed(factors=[0.9, 1.1], p=2/3)] + transforms   # noqa
             # Drop feats to be on the safe side.
             train = SpeechSynthesisDataset(
-                get_text_token_collater(self.args.text_tokens),
+                get_text_token_collater_with_record(self.args.text_tokens),
                 cut_transforms=transforms,
                 feature_input_strategy=OnTheFlyFeatures(get_fbank_extractor()),
                 feature_transforms=input_transforms,
             )
         else:
             train = SpeechSynthesisDataset(
-                get_text_token_collater(self.args.text_tokens),
+                get_text_token_collater_with_record(self.args.text_tokens),
                 feature_input_strategy=_get_input_strategy(
                     self.args.input_strategy, self.args.dataset, cuts_train
                 ),
@@ -348,13 +348,13 @@ class TtsDataModule:
         logging.info("About to create dev dataset")
         if self.args.on_the_fly_feats:
             validate = SpeechSynthesisDataset(
-                get_text_token_collater(self.args.text_tokens),
+                get_text_token_collater_with_record(self.args.text_tokens),
                 feature_input_strategy=OnTheFlyFeatures(get_fbank_extractor()),
                 cut_transforms=[],
             )
         else:
             validate = SpeechSynthesisDataset(
-                get_text_token_collater(self.args.text_tokens),
+                get_text_token_collater_with_record(self.args.text_tokens),
                 feature_input_strategy=_get_input_strategy(
                     self.args.input_strategy, self.args.dataset, cuts_valid
                 ),
@@ -379,7 +379,7 @@ class TtsDataModule:
     def test_dataloaders(self, cuts: CutSet) -> DataLoader:
         logging.debug("About to create test dataset")
         test = SpeechSynthesisDataset(
-            get_text_token_collater(self.args.text_tokens),
+            get_text_token_collater_with_record(self.args.text_tokens),
             feature_input_strategy=OnTheFlyFeatures(get_fbank_extractor())
             if self.args.on_the_fly_feats
             else _get_input_strategy(
