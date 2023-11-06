@@ -360,11 +360,16 @@ class TtsDataModule:
                 ),
                 cut_transforms=[],
             )
-        valid_sampler = DynamicBucketingSampler(
-            cuts_valid,
-            max_duration=self.args.max_duration,
-            shuffle=False,
-        )
+        # valid_sampler = DynamicBucketingSampler(
+        #     cuts_valid,
+        #     max_duration=self.args.max_duration,
+        #     shuffle=False,
+        # )
+        valid_sampler = SimpleCutSampler(
+                cuts_valid,
+                max_duration=self.args.max_duration,
+                shuffle=False,
+            )
         logging.info("About to create dev dataloader")
         valid_dl = DataLoader(
             validate,
