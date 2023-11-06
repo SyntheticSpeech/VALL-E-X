@@ -849,7 +849,7 @@ def filter_short_and_long_utterances(
 
 def freeze_model(model:nn.Module):
     # List of layers not to freeze
-    unfreeze_layer = [model.ar_predict_layers, model.nar_predict_layers]
+    unfreeze_layer = [model.ar_predict_layer, model.nar_predict_layers]
 
     # Iterate through the layers and freeze them
     for layer in model.children():
