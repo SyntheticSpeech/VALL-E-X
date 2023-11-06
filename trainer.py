@@ -877,7 +877,9 @@ def run(rank, world_size, args):
         The return value of get_parser().parse_args()
     """
     params = get_params()
+    print(params.prepend_bos)
     params.update(vars(args))
+    print(params.prepend_bos)
 
     fix_random_seed(params.seed)
     rng = random.Random(params.seed)
