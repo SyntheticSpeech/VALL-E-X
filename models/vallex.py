@@ -616,7 +616,7 @@ class VALLE(VALLF):
             x = self.nar_text_position(x)
 
             y_emb, prefix_len = self._prepare_prompts(
-                y, y_lens, codes, nar_stage, y_prompts_codes
+                y, y_lens, codes, nar_stage, y_prompts_codes, self.prefix_mode
             )
 
             y_len = y_lens.max()
