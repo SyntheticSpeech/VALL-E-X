@@ -877,8 +877,9 @@ def run(rank, world_size, args):
         The return value of get_parser().parse_args()
     """
     params = get_params()
-    print(params.prepend_bos)
+    # print(params.prepend_bos)
     params.update(vars(args))
+    params.prepend_bos = True # Hao: manual change prepend_bos back to True
     print(params.prepend_bos)
 
     fix_random_seed(params.seed)
