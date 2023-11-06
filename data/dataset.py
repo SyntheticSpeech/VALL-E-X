@@ -32,7 +32,7 @@ from lhotse.dataset.collation import collate_audio
 from lhotse.dataset.input_strategies import BatchIO, PrecomputedFeatures
 from lhotse.utils import ifnone
 
-from collation import TextTokenCollater
+from .collation import TextTokenCollater
 
 _pad        = '_'
 _punctuation = ',.!?-~…'
