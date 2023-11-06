@@ -96,9 +96,19 @@ class TextTokenCollater:
             for seq in tokens_seqs
         ]
 
+        '''
+        由于下面initialize Collator方式的不同, plachtaa的这一步的seq和lifeitong不一样
+        训练还是选择使用了后者
+        '''
+        # tokens_batch = torch.from_numpy(
+        #     np.array(
+        #         [seq for seq in seqs],
+        #         dtype=np.int64,
+        #     )
+        # )
         tokens_batch = torch.from_numpy(
             np.array(
-                [seq for seq in seqs],
+                [[self.token2idx[token] for token in seq] for seq in seqs],
                 dtype=np.int64,
             )
         )
