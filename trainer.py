@@ -853,7 +853,7 @@ def freeze_model(model:nn.Module):
 
     # Iterate through the layers and freeze them
     for layer in model.children():
-        if layer == unfreeze_layer:
+        if layer in unfreeze_layer:
             for param in layer.parameters():
                 param.requires_grad = True
         else:
@@ -1003,6 +1003,8 @@ def run(rank, world_size, args):
 
     if checkpoints and "optimizer" in checkpoints:
         logging.info("Loading optimizer state dict")
+        print(type(checkpoints["optimizer"]))
+        print(checkpoints["optimizer"])
         optimizer.load_state_dict(checkpoints["optimizer"])
 
     if (
