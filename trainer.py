@@ -381,6 +381,8 @@ def load_checkpoint_if_available(
         scheduler=scheduler,
     )
 
+    print(f"Checkpint optimizer: {optimizer}")
+
     saved_stage = saved_params.get("train_stage", 0)
     if params.train_stage != saved_stage:
         # switch training stage
@@ -1001,10 +1003,8 @@ def run(rank, world_size, args):
     scheduler = get_scheduler(params, optimizer)
     optimizer.zero_grad()
 
-    if checkpoints and "optimizer" in checkpoints:
+    if checkpoints and "optimizer" in checkpoints and checkpoints["optimizer"]: #Hao:这里原生代码不检查none极可能是从没跑过checkpoint
         logging.info("Loading optimizer state dict")
-        print(type(checkpoints["optimizer"]))
-        print(checkpoints["optimizer"])
         optimizer.load_state_dict(checkpoints["optimizer"])
 
     if (
