@@ -45,7 +45,6 @@ from data import (
     tokenize_audio,
     tokenize_text,
 )
-from utils import make_transcript
 from data.collation import get_text_token_collater_with_record, get_text_token_collater
 from models import get_model
 from macros import *
@@ -156,6 +155,25 @@ def load_model(checkpoint, device):
 
     return model, text_tokens
 
+def make_transcript(name, wav, sr, transcript=None):
+
+    if not isinstance(wav, torch.FloatTensor):
+        wav = torch.tensor(wav)
+    if wav.abs().max() > 1:
+        wav /= wav.abs().max()
+    if wav.size(-1) == 2:
+        wav = wav.mean(-1, keepdim=False)
+    if wav.ndim == 1:
+        wav = wav.unsqueeze(0)
+    assert wav.ndim and wav.size(0) == 1
+    #Hao deleted whisper processing
+    text = transcript
+    lang, _ = langid.classify(text)
+    lang_token = lang2token[lang]
+    text = lang_token + text + lang_token
+
+    torch.cuda.empty_cache()
+    return text, lang
 
 @torch.no_grad()
 def main():
