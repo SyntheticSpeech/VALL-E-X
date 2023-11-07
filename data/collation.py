@@ -34,6 +34,7 @@ class TextTokenCollater:
         pad_symbol: str = "<pad>",
         bos_symbol: str = "<bos>",
         eos_symbol: str = "<eos>",
+        mode: bool = True, #True for training, false for inference
     ):
         self.pad_symbol = pad_symbol
 
@@ -52,6 +53,8 @@ class TextTokenCollater:
 
         self.token2idx = {token: idx for idx, token in enumerate(unique_tokens)}
         self.idx2token = [token for token in unique_tokens]
+
+        self.mode = mode
 
     def index(
         self, tokens_list: List[str]
@@ -100,25 +103,21 @@ class TextTokenCollater:
         由于下面initialize Collator方式的不同, plachtaa的这一步的seq和lifeitong不一样
         训练还是选择使用了后者
         '''
-        # tokens_batch = torch.from_numpy(
-        #     np.array(
-        #         [seq for seq in seqs],
-        #         dtype=np.int64,
-        #     )
-        # )
-        tokens_batch = torch.from_numpy(
-            np.array(
-                [[self.token2idx[token] for token in seq] for seq in seqs],
-                dtype=np.int64,
-            )
-        )
 
-        tokens_lens = torch.IntTensor(
-            [
-                len(seq) + int(self.add_eos) + int(self.add_bos)
-                for seq in tokens_seqs
-            ]
-        )
+        if self.mode:
+            tokens_batch = torch.from_numpy(
+                np.array(
+                    [[self.token2idx[token] for token in seq] for seq in seqs],
+                    dtype=np.int64,
+                )
+            )
+        else:
+            tokens_lens = torch.IntTensor(
+                [
+                    len(seq) + int(self.add_eos) + int(self.add_bos)
+                    for seq in tokens_seqs
+                ]
+            )
 
         return tokens_batch, tokens_lens
 
@@ -128,7 +127,7 @@ Plachtaa这个函数的input argument不要了, 取决于inference的时候要�
 '''
 def get_text_token_collater() -> TextTokenCollater:
     collater = TextTokenCollater(
-        ['0'], add_bos=False, add_eos=False
+        ['0'], add_bos=False, add_eos=False, mode=False
     )
     return collater
 
@@ -136,6 +135,6 @@ def get_text_token_collater_with_record(text_tokens_file: str) -> TextTokenColla
     text_tokens_path = Path(text_tokens_file)
     unique_tokens = SymbolTable.from_file(text_tokens_path)
     collater = TextTokenCollater(
-        unique_tokens.symbols, add_bos=True, add_eos=True
+        unique_tokens.symbols, add_bos=True, add_eos=True, mode=True
     )
     return collater
