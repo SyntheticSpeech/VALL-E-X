@@ -783,7 +783,7 @@ def train_one_epoch(
             logging.info(
                 f"Epoch {params.cur_epoch}, "
                 f"batch {batch_idx}, train_loss[{loss_info}], "
-                f"tot_loss[{tot_loss}], "
+                f"tot_loss[{tot_loss}, cal[{tot_loss['loss'] / tot_loss['frames']}]], "
                 f"batch size: {batch_size}, "
                 f"lr: {cur_lr:.2e}"
                 + (
@@ -827,7 +827,7 @@ def train_one_epoch(
                     world_size=world_size,
                 )
             logging.info(
-                f"Epoch {params.cur_epoch}, validation: {valid_info}"
+                f"Epoch {params.cur_epoch}, validation: {valid_info}, loss {valid_info['loss'] / valid_info['frames']}"
             )
             logging.info(
                 f"Maximum memory allocated so far is {torch.cuda.max_memory_allocated()//1000000}MB"
@@ -846,7 +846,7 @@ def train_one_epoch(
         params.best_train_epoch = params.cur_epoch
         params.best_train_loss = params.train_loss
         logging.info(
-            f"New best_train_loss {params.best_train_loss} at {params.best_train_epoch}"
+            f"New best_train_loss {loss_value} at {params.best_train_epoch}"
         )
 
 

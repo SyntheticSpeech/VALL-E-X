@@ -2,17 +2,36 @@
 ## First run
 Successfully trained on Plachtaa's pretrained model, using Lifeiteng's training code. 
 Several key things to notice:
+- Prepare our dataset in LibriTTS format
+- Using Lifeiteng's VALLE forward, but added language embedding
+- Fixed embedding size in order to load Plachtaa's pretrained model
+- Fixed erros in Checkpoint, training logic, data processing (collation), etc.
+- Fixed inference script: it correctly produces good result if we directly use pretrained model
 
 ## Run 2
 - learning rate 1e-5
 - warmup-epochs 0
-- Trained AR, epoch 80, freeze ar_predict_layer only
+- Trained AR, epoch 80, keep ar_predict_layer unfreezed
 - log_interval, valid_interval, checkpoint frequency and logic
 
 | Phase      | loss | Top10Accuracy    |
 | ----------- | ----------- | ----------- | 
 | Train | 0.00257 (4.657/1813) | 0.5279 | 
 | Valid | 0.00522 (4.909/941) | 0.4687 | 
+
+## Run 3
+- Add language id "EN" to transcription, change to PhonemeBpeTokenizer text tokenizer in prepare stage
+- learning rate 1e-6
+- warmup-epochs 0
+- Trained AR, epoch 80, keep ar_predict_layer unfreezed
+- Trained NAR epoch 180, keep nar_predict_layers unfreezed
+
+| Phase      | loss | Top10Accuracy    |
+| ----------- | ----------- | ----------- | 
+| AR Train |  0.0000512 (4.967/9704.00) | 0.4304 | 
+| AR Valid |  0.00522 (4.914/941.00) | 0.4665 | 
+| NAR Train |  0.000824 (7.999/9704.00) | 0.01076 | 
+| NAR Valid |  0.00829 (7.79/941.00) | 0.01838 | 
 
 ## Implementation details
 ### prepare dataset

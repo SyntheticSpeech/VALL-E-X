@@ -534,8 +534,8 @@ class VALLE(VALLF):
             # language embedding, only english
             prompt_language_id = torch.LongTensor(np.array([self.language_ID['en']])).to(x.device)
             text_language_id = torch.LongTensor(np.array([self.language_ID['en']])).to(x.device)
-            x[:, :enroll_x_lens, :] += self.nar_language_embedding(prompt_language_id)
-            x[:, enroll_x_lens:, :] += self.nar_language_embedding(text_language_id)
+            x[:, :enroll_x_lens, :] += self.ar_language_embedding(prompt_language_id)
+            x[:, enroll_x_lens:, :] += self.ar_language_embedding(text_language_id)
 
             x = self.ar_text_prenet(x)
             x = self.ar_text_position(x)
