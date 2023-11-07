@@ -1047,7 +1047,6 @@ def run(rank, world_size, args):
         train_cuts, sampler_state_dict=sampler_state_dict
     )
     valid_dl = dataset.valid_dataloaders(valid_cuts)
-    print(f"train size {len(train_dl)} valid size {valid_dl}")
 
     if params.oom_check:
         scan_pessimistic_batches_for_oom(
