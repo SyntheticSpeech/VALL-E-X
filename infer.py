@@ -257,6 +257,8 @@ def main():
                 enroll_x_lens=enroll_x_lens,
                 top_k=args.top_k,
                 temperature=args.temperature,
+                prompt_language="en",
+                text_language="no-accent",
             )
 
         if audio_prompts != []:
