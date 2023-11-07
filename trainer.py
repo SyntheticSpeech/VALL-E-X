@@ -848,21 +848,31 @@ def filter_short_and_long_utterances(
 
     return cuts
 
-def freeze_model(model:nn.Module):
-    # List of layers not to freeze
-    unfreeze_layer = [model.ar_predict_layer, model.nar_predict_layers]
+def freeze_model(model:nn.Module, train_stage:int):
+    if train_stage == 1:
+        # Iterate through the layers and freeze them
+        for layer in model.children():
+            if layer in [model.ar_predict_layer]:
+                for param in layer.parameters():
+                    param.requires_grad = True
+            else:
+                for param in layer.parameters():
+                    param.requires_grad = False
 
-    # Iterate through the layers and freeze them
-    for layer in model.children():
-        if layer in unfreeze_layer:
-            for param in layer.parameters():
-                param.requires_grad = True
-        else:
-            for param in layer.parameters():
-                param.requires_grad = False
+        for name, param in model.named_parameters():
+            print(f'{name}: requires_grad={param.requires_grad}')
+    elif train_stage == 2:
+        # Iterate through the layers and freeze them
+        for layer in model.children():
+            if layer in [model.nar_predict_layers]:
+                for param in layer.parameters():
+                    param.requires_grad = True
+            else:
+                for param in layer.parameters():
+                    param.requires_grad = False
 
-    for name, param in model.named_parameters():
-        print(f'{name}: requires_grad={param.requires_grad}')
+        for name, param in model.named_parameters():
+            print(f'{name}: requires_grad={param.requires_grad}')
 
 
 def run(rank, world_size, args):
