@@ -34,10 +34,6 @@ if torch.backends.mps.is_available():
     device = torch.device("mps")
 url = 'https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt'
 
-checkpoints_dir = "./checkpoints/"
-
-model_checkpoint_name = "vallex-checkpoint.pt"
-
 model = None
 
 codec = None
@@ -47,22 +43,21 @@ vocos = None
 text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
 text_collater = get_text_token_collater()
 
-def preload_models():
+def preload_models(checkpoint_path):
     global model, codec, vocos
-    if not os.path.exists(checkpoints_dir): os.mkdir(checkpoints_dir)
-    if not os.path.exists(os.path.join(checkpoints_dir, model_checkpoint_name)):
+    if not os.path.exists(checkpoint_path):
         import wget
         try:
             logging.info(
                 "Downloading model from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt ...")
             # download from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt to ./checkpoints/vallex-checkpoint.pt
             wget.download("https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt",
-                          out="./checkpoints/vallex-checkpoint.pt", bar=wget.bar_adaptive)
+                          out=checkpoint_path, bar=wget.bar_adaptive)
         except Exception as e:
             logging.info(e)
             raise Exception(
                 "\n Model weights download failed, please go to 'https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt'"
-                "\n manually download model weights and put it to {} .".format(os.getcwd() + "\checkpoints"))
+                "\n manually download model weights and put it to {} .".format(checkpoint_path))
     # VALL-E
     model = VALLE(
         N_DIM,
@@ -76,7 +71,7 @@ def preload_models():
         prepend_bos=True,
         num_quantizers=NUM_QUANTIZERS,
     ).to(device)
-    checkpoint = torch.load(os.path.join(checkpoints_dir, model_checkpoint_name), map_location='cpu')
+    checkpoint = torch.load(checkpoint_path, map_location='cpu')
     missing_keys, unexpected_keys = model.load_state_dict(
         checkpoint["model"], strict=True
     )
@@ -89,7 +84,7 @@ def preload_models():
     vocos = Vocos.from_pretrained('charactr/vocos-encodec-24khz').to(device)
 
 @torch.no_grad()
-def generate_audio(text, prompt=None, language='auto', accent='no-accent'):
+def generate_audio(text, prompt=None, language='en', accent='no-accent'):
     global model, codec, vocos, text_tokenizer, text_collater
     text = text.replace("\n", "").strip(" ")
     # detect language

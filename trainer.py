@@ -677,9 +677,14 @@ def train_one_epoch(
                     is_training=True,
                 )
             # summary stats
-            tot_loss = (
-                tot_loss * (1 - 1 / params.reset_interval)
-            ) + loss_info * (1 / params.reset_interval)
+            # tot_loss = (
+            #     tot_loss * (1 - 1 / params.reset_interval)
+            # ) + loss_info * (1 / params.reset_interval)
+            '''
+            Hao: because we have super small dataset, batches in 1 epoch are few
+            we can simply add to total in one epoch
+            '''
+            tot_loss = tot_loss + loss_info
 
             # NOTE: We use reduction==sum and loss is computed over utterances
             # in the batch and there is no normalization to it so far.
@@ -840,6 +845,9 @@ def train_one_epoch(
     if params.train_loss < params.best_train_loss:
         params.best_train_epoch = params.cur_epoch
         params.best_train_loss = params.train_loss
+        logging.info(
+            f"New best_train_loss {params.best_train_loss} at {params.best_train_epoch}"
+        )
 
 
 def filter_short_and_long_utterances(
