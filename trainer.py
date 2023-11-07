@@ -942,7 +942,7 @@ def run(rank, world_size, args):
     )
 
     # freeze majority of the model
-    freeze_model(model=model)
+    freeze_model(model=model,train_stage=params.train_stage)
 
     model.to(device)
     if world_size > 1:
