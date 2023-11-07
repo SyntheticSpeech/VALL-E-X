@@ -40,6 +40,7 @@ from data import (
 )
 from data.fbank import get_fbank_extractor
 from utils import SymbolTable
+from utils.g2p import PhonemeBpeTokenizer
 
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
@@ -136,9 +137,11 @@ def main():
         types=["recordings", "supervisions", "cuts"],
     )
 
-    text_tokenizer = None
-    if args.text_extractor:
-        text_tokenizer = TextTokenizer(backend=args.text_extractor)
+    # text_tokenizer = None
+    # if args.text_extractor:
+    #     text_tokenizer = TextTokenizer(backend=args.text_extractor)
+    # Hao: shift to Plachtaa's tokenizer
+    text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
 
     audio_extractor = None
     if args.audio_extractor:
@@ -242,9 +245,10 @@ def main():
                             c.supervisions[0].custom = {}
                         else:
                             assert args.prefix == "libritts"
-                            phonemes = tokenize_text(
-                                text_tokenizer, text=c.supervisions[0].text
-                            )
+                            phonemes, langs = text_tokenizer.tokenize(text=c.supervisions[0].text.strip())
+                            # phonemes = tokenize_text(
+                            #     text_tokenizer, text=c.supervisions[0].text
+                            # )
                         c.supervisions[0].custom["tokens"] = {"text": phonemes}
                         unique_symbols.update(phonemes)
 
