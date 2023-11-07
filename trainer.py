@@ -482,7 +482,17 @@ def save_checkpoint(
 
     if params.best_valid_epoch == params.cur_epoch:
         best_valid_filename = params.exp_dir / "best-valid-loss.pt"
-        copyfile(src=best_train_filename, dst=best_valid_filename)
+        save_checkpoint_impl(
+            filename=best_valid_filename,
+            model=model,
+            model_avg=model_avg,
+            params=params,
+            optimizer=optimizer,
+            scheduler=scheduler,
+            sampler=sampler,
+            scaler=scaler,
+            rank=rank,
+        )
 
 
 def compute_loss(
