@@ -155,12 +155,13 @@ def get_parser():
         help="The scheduler.",
     )
     parser.add_argument(
+        #!!! fine-tuning改小
         "--base-lr", type=float, default=0.05, help="The base learning rate."
     )
     parser.add_argument(
         "--warmup-steps",
         type=int,
-        default=200,
+        default=200, #!!! fine0tuning不用
         help="""Number of steps that affects how rapidly the learning rate
         decreases. We suggest not to change this.""",
     )
@@ -317,7 +318,7 @@ def get_params() -> AttributeDict:
             "best_train_epoch": -1,
             "best_valid_epoch": -1,
             "batch_idx_train": 0,
-            "log_interval": 100,  # 10: debug 100: train
+            "log_interval": 1,  # 10: debug 100: train
             "reset_interval": 200,
             "valid_interval": 10000,
             # parameters for TTS
@@ -464,26 +465,24 @@ def save_checkpoint(
     """
     if rank != 0:
         return
-    filename = params.exp_dir / f"epoch-{params.cur_epoch}.pt"
-    save_checkpoint_impl(
-        filename=filename,
-        model=model,
-        model_avg=model_avg,
-        params=params,
-        optimizer=optimizer,
-        scheduler=scheduler,
-        sampler=sampler,
-        scaler=scaler,
-        rank=rank,
-    )
-
+    
     if params.best_train_epoch == params.cur_epoch:
         best_train_filename = params.exp_dir / "best-train-loss.pt"
-        copyfile(src=filename, dst=best_train_filename)
+        save_checkpoint_impl(
+            filename=best_train_filename,
+            model=model,
+            model_avg=model_avg,
+            params=params,
+            optimizer=optimizer,
+            scheduler=scheduler,
+            sampler=sampler,
+            scaler=scaler,
+            rank=rank,
+        )
 
     if params.best_valid_epoch == params.cur_epoch:
         best_valid_filename = params.exp_dir / "best-valid-loss.pt"
-        copyfile(src=filename, dst=best_valid_filename)
+        copyfile(src=best_train_filename, dst=best_valid_filename)
 
 
 def compute_loss(
@@ -993,7 +992,7 @@ def run(rank, world_size, args):
     elif params.optimizer_name == "Adam":
         optimizer = torch.optim.Adam(
             model_parameters,
-            lr=params.base_lr,
+            lr=params.base_lr, # 10 -6 -7 0.05
             betas=(0.9, 0.95),
             eps=1e-8,
         )

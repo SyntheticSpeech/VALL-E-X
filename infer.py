@@ -164,7 +164,12 @@ def main():
     audio_prompts = []
     if args.audio_prompts:
         for n, audio_file in enumerate(args.audio_prompts.split("|")):
-            encoded_frames = tokenize_audio(audio_tokenizer, audio_file)
+            wav_pr, sr = torchaudio.load(audio_file)
+            if wav_pr.size(-1) / sr > 15:
+                raise ValueError(f"Prompt too long, expect length below 15 seconds, got {wav_pr / sr} seconds.")
+            if wav_pr.size(0) == 2:
+                wav_pr = wav_pr.mean(0, keepdim=True)
+            encoded_frames = tokenize_audio(audio_tokenizer, (wav_pr, sr))
             if False:
                 samples = audio_tokenizer.decode(encoded_frames)
                 torchaudio.save(
