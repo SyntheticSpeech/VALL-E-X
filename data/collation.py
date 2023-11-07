@@ -133,7 +133,7 @@ Plachtaa这个函数的input argument不要了, 取决于inference的时候要�
 '''
 def get_text_token_collater() -> TextTokenCollater:
     collater = TextTokenCollater(
-        ['0'], add_bos=False, add_eos=False, mode=False
+        ['0'], add_bos=False, add_eos=False, pad_symbol = "3", mode=False
     )
     return collater
 
