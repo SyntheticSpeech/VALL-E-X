@@ -4,6 +4,8 @@ import torch.nn as nn
 
 from .symbol_table import SymbolTable
 
+from .prompt_making import make_prompt, make_transcript
+
 # make_pad_mask = make_pad_mask
 SymbolTable = SymbolTable
 
