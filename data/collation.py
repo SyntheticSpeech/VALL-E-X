@@ -112,12 +112,18 @@ class TextTokenCollater:
                 )
             )
         else:
-            tokens_lens = torch.IntTensor(
-                [
-                    len(seq) + int(self.add_eos) + int(self.add_bos)
-                    for seq in tokens_seqs
-                ]
+            tokens_batch = torch.from_numpy(
+                np.array(
+                    [seq for seq in seqs],
+                    dtype=np.int64,
+                )
             )
+        tokens_lens = torch.IntTensor(
+            [
+                len(seq) + int(self.add_eos) + int(self.add_bos)
+                for seq in tokens_seqs
+            ]
+        )
 
         return tokens_batch, tokens_lens
 
