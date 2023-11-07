@@ -45,9 +45,9 @@ from data import (
     tokenize_audio,
     tokenize_text,
 )
+from utils import make_transcript
 from data.collation import get_text_token_collater_with_record, get_text_token_collater
 from models import get_model
-from utils import make_transcript
 from macros import *
 from utils.g2p import PhonemeBpeTokenizer
 
