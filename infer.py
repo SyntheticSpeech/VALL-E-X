@@ -212,7 +212,7 @@ def main():
                     top_k=args.top_k,
                     temperature=args.temperature,
                     prompt_language="en",
-                    text_language="no-accent",
+                    text_language="en",
                 )
 
                 samples = audio_tokenizer.decode(
@@ -258,7 +258,7 @@ def main():
                 top_k=args.top_k,
                 temperature=args.temperature,
                 prompt_language="en",
-                text_language="no-accent",
+                text_language="en",
             )
 
         if audio_prompts != []:
