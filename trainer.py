@@ -533,7 +533,7 @@ def compute_loss(
     audio_features_lens = batch["audio_features_lens"].to(device)
     assert audio_features.ndim == 3
 
-    print(f"enroll_x_lens {text_tokens.shape[-1]}")
+    # print(f"enroll_x_lens {text_tokens.shape[-1]}")
     with torch.set_grad_enabled(is_training):
         predicts, loss, metrics = model(
             x=text_tokens,
@@ -842,8 +842,8 @@ def train_one_epoch(
 
     loss_value = tot_loss["loss"] / tot_loss["frames"]
     params.train_loss = loss_value
-    print(f"loss type {type(tot_loss['loss'])} {type(tot_loss['frames'])}")
-    print(f"loss value {tot_loss['loss']} {tot_loss['frames']}")
+    # print(f"loss type {type(tot_loss['loss'])} {type(tot_loss['frames'])}")
+    # print(f"loss value {tot_loss['loss']} {tot_loss['frames']}")
     if params.train_loss < params.best_train_loss:
         params.best_train_epoch = params.cur_epoch
         params.best_train_loss = params.train_loss

@@ -16,8 +16,8 @@ Several key things to notice:
 
 | Phase      | loss | Top10Accuracy    |
 | ----------- | ----------- | ----------- | 
-| Train | 0.00257 (4.657/1813) | 0.5279 | 
-| Valid | 0.00522 (4.909/941) | 0.4687 | 
+| Train | 4.657 | 0.5279 | 
+| Valid | 4.909 | 0.4687 | 
 
 ## Run 3
 - Add language id "EN" to transcription, change to PhonemeBpeTokenizer text tokenizer in prepare stage
@@ -28,10 +28,10 @@ Several key things to notice:
 
 | Phase      | loss | Top10Accuracy    |
 | ----------- | ----------- | ----------- | 
-| AR Train |  0.0000512 (4.967/9704.00) | 0.4304 | 
-| AR Valid |  0.00522 (4.914/941.00) | 0.4665 | 
-| NAR Train |  0.000824 (7.999/9704.00) | 0.01076 | 
-| NAR Valid |  0.00829 (7.79/941.00) | 0.01838 | 
+| AR Train |  4.967 | 0.4304 | 
+| AR Valid |  4.914| 0.4665 | 
+| NAR Train |  7.999 | 0.01076 | 
+| NAR Valid |  7.79 | 0.01838 | 
 
 ## Run 4
 - Fixed wrong embedding used in AR forwarding
@@ -41,8 +41,11 @@ Several key things to notice:
 
 | Phase      | loss | Top10Accuracy    |
 | ----------- | ----------- | ----------- | 
-| AR Train |  (4.765/9704.00) | 0.4365 | 
-| AR Valid |  (4.763/941.00) | 0.4665 | 
+| AR Train |  4.765 | 0.4365 | 
+| AR Valid |  4.763 | 0.4665 | 
+
+## Run 5
+- Fixed forward logic: removed enrolled_len
 
 ## Implementation details
 ### prepare dataset
