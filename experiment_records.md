@@ -46,6 +46,14 @@ Several key things to notice:
 
 ## Run 5
 - Fixed forward logic: removed enrolled_len
+- learning rate 1e-4, ScaledAdam
+- warmup-epochs 200
+- Trained AR, epoch 1000, keep ar_predict_layer unfreezed
+
+| Phase      | loss | Top10Accuracy    |
+| ----------- | ----------- | ----------- | 
+| AR Train |  4.396 | 0.4497 | 
+| AR Valid |  4.504 | 0.4697 | 
 
 ## Implementation details
 ### prepare dataset
