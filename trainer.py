@@ -580,11 +580,6 @@ def compute_validation_loss(
         tot_loss = tot_loss + loss_info
     if world_size > 1:
         tot_loss.reduce(loss.device)
-    loss_value = tot_loss["loss"] / tot_loss["frames"]
-    if loss_value < params.best_valid_loss:
-        params.best_valid_epoch = params.cur_epoch
-        params.best_valid_loss = loss_value
-
     if params.visualize:
         output_dir = Path(
             f"{params.exp_dir}/eval/step-{params.batch_idx_train:06d}"
@@ -832,6 +827,22 @@ def train_one_epoch(
             logging.info(
                 f"Maximum memory allocated so far is {torch.cuda.max_memory_allocated()//1000000}MB"
             )
+            valid_loss = valid_info["loss"] / valid_info["frames"]
+            if valid_loss < params.best_valid_loss:
+                params.best_valid_epoch = params.cur_epoch
+                params.best_valid_loss = valid_loss
+                best_valid_filename = params.exp_dir / "best-valid-loss.pt"
+                save_checkpoint_impl(
+                    filename=best_valid_filename,
+                    model=model,
+                    model_avg=model_avg,
+                    params=params,
+                    optimizer=optimizer,
+                    scheduler=scheduler,
+                    sampler=train_dl.sampler,
+                    scaler=scaler,
+                    rank=rank,
+                )
 
             if tb_writer is not None:
                 valid_info.write_summary(
@@ -841,14 +852,26 @@ def train_one_epoch(
             model.train()
 
     loss_value = tot_loss["loss"] / tot_loss["frames"]
-    params.train_loss = loss_value
+    # params.train_loss = loss_value
     # print(f"loss type {type(tot_loss['loss'])} {type(tot_loss['frames'])}")
     # print(f"loss value {tot_loss['loss']} {tot_loss['frames']}")
-    if params.train_loss < params.best_train_loss:
+    if loss_value < params.best_train_loss:
         params.best_train_epoch = params.cur_epoch
-        params.best_train_loss = params.train_loss
+        params.best_train_loss = loss_value
         logging.info(
             f"New best_train_loss {loss_value} at {params.best_train_epoch}"
+        )
+        best_train_filename = params.exp_dir / "best-train-loss.pt"
+        save_checkpoint_impl(
+            filename=best_train_filename,
+            model=model,
+            model_avg=model_avg,
+            params=params,
+            optimizer=optimizer,
+            scheduler=scheduler,
+            sampler=train_dl.sampler,
+            scaler=scaler,
+            rank=rank,
         )
 
 
@@ -1110,16 +1133,16 @@ def run(rank, world_size, args):
             rank=rank,
         )
 
-        save_checkpoint(
-            params=params,
-            model=model,
-            model_avg=model_avg,
-            optimizer=optimizer,
-            scheduler=scheduler,
-            sampler=train_dl.sampler,
-            scaler=scaler,
-            rank=rank,
-        )
+        # save_checkpoint(
+        #     params=params,
+        #     model=model,
+        #     model_avg=model_avg,
+        #     optimizer=optimizer,
+        #     scheduler=scheduler,
+        #     sampler=train_dl.sampler,
+        #     scaler=scaler,
+        #     rank=rank,
+        # )
 
     logging.info("Done!")
 

@@ -245,7 +245,10 @@ def main():
                             c.supervisions[0].custom = {}
                         else:
                             assert args.prefix == "libritts"
-                            phonemes, langs = text_tokenizer.tokenize(text=c.supervisions[0].text.strip())
+                            # Hao: using PhonemeBpeTokenizer
+                            text = c.supervisions[0].text.strip()
+                            text = "[EN]" + text + "[EN]"
+                            phonemes, langs = text_tokenizer.tokenize(text=text)
                             # phonemes = tokenize_text(
                             #     text_tokenizer, text=c.supervisions[0].text
                             # )

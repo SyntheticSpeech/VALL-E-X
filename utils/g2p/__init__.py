@@ -21,7 +21,7 @@ class PhonemeBpeTokenizer:
     phoneme_tokens = self.tokenizer.encode(phonemes).ids
     assert(len(phoneme_tokens) == len(langs))
     if not len(phoneme_tokens):
-      raise ValueError("Empty text is given")
+      raise ValueError(f"Empty text is given, text {text}, phonemes {phonemes}, phoneme_tokens {phoneme_tokens}")
     return phoneme_tokens, langs
 
 def text_to_sequence(text, cleaner_names):
