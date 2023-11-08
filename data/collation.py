@@ -100,8 +100,7 @@ class TextTokenCollater:
         ]
 
         '''
-        由于下面initialize Collator方式的不同, plachtaa的这一步的seq和lifeitong不一样
-        训练还是选择使用了后者
+        由于下面tokenizer方式的不同, plachtaa的这一步的seq和lifeitong不一样
         '''
 
         if self.mode:
@@ -128,12 +127,12 @@ class TextTokenCollater:
         return tokens_batch, tokens_lens
 
 '''
-Plachtaa这个函数的input argument不要了, 取决于inference的时候要不要用训练数据集的symboltable
-这里并不清楚tradeoff, 选择保留两者
+Plachtaa这个函数的input argument不要了, 区别在于lifeiteng用的自己根据训练集构建的phoneme -> index table
+而plachtaa用的tokenizer (take in一个提前预设好的json)在tokenizer的时候就完成了这一步
 '''
 def get_text_token_collater() -> TextTokenCollater:
     collater = TextTokenCollater(
-        ['0'], add_bos=False, add_eos=False, pad_symbol = '0', mode=False
+        ['0'], add_bos=False, add_eos=False, pad_symbol = '3', mode=False
     )
     return collater
 

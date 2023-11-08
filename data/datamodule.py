@@ -41,7 +41,7 @@ from data.dataset import SpeechSynthesisDataset
 from data.fbank import get_fbank_extractor
 from data.input_strategies import PromptedPrecomputedFeatures
 
-# PrecomputedFeatures = PrecomputedFeatures
+PrecomputedFeatures = PrecomputedFeatures
 
 
 class _SeedWorkers:

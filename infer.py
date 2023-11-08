@@ -156,7 +156,6 @@ def load_model(checkpoint, device):
     return model, text_tokens
 
 def make_transcript(name, wav, sr, transcript=None):
-
     if not isinstance(wav, torch.FloatTensor):
         wav = torch.tensor(wav)
     if wav.abs().max() > 1:
@@ -178,15 +177,14 @@ def make_transcript(name, wav, sr, transcript=None):
 @torch.no_grad()
 def main():
     args = get_args()
-    # text_tokenizer = TextTokenizer(backend=args.text_extractor)
-    text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
-
     device = torch.device("cpu")
     if torch.cuda.is_available():
         device = torch.device("cuda", 0)
     model, _ = load_model(args.checkpoint, device)
-    text_collater = get_text_token_collater()
 
+    text_collater = get_text_token_collater()
+    # text_tokenizer = TextTokenizer(backend=args.text_extractor)
+    text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
     audio_tokenizer = AudioTokenizer()
     vocos = Vocos.from_pretrained('charactr/vocos-encodec-24khz').to(device)
 

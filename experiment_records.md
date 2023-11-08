@@ -33,6 +33,17 @@ Several key things to notice:
 | NAR Train |  0.000824 (7.999/9704.00) | 0.01076 | 
 | NAR Valid |  0.00829 (7.79/941.00) | 0.01838 | 
 
+## Run 4
+- Fixed wrong embedding used in AR forwarding
+- learning rate 0.04 (ScaledAdam should be smart enough)
+- warmup-epochs 200
+- Trained AR, epoch 160, keep ar_predict_layer unfreezed
+
+| Phase      | loss | Top10Accuracy    |
+| ----------- | ----------- | ----------- | 
+| AR Train |  (4.765/9704.00) | 0.4365 | 
+| AR Valid |  (4.763/941.00) | 0.4665 | 
+
 ## Implementation details
 ### prepare dataset
 As lifeiteng uses Lhotse, we have to make our dataset something like libriTTS.

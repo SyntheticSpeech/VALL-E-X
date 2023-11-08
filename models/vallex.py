@@ -506,7 +506,6 @@ class VALLE(VALLF):
         y_mask = make_pad_mask(y_lens).to(y.device)
         y_mask_int = y_mask.type(torch.int64)
 
-        enroll_x_lens = x.shape[-1]
         text = x
         codes = y.type(torch.int64) * (1 - y_mask_int.unsqueeze(dim=-1))
 
@@ -533,9 +532,7 @@ class VALLE(VALLF):
 
             # language embedding, only english
             prompt_language_id = torch.LongTensor(np.array([self.language_ID['en']])).to(x.device)
-            text_language_id = torch.LongTensor(np.array([self.language_ID['en']])).to(x.device)
-            x[:, :enroll_x_lens, :] += self.ar_language_embedding(prompt_language_id)
-            x[:, enroll_x_lens:, :] += self.ar_language_embedding(text_language_id)
+            x[:, :, :] += self.ar_language_embedding(prompt_language_id)
 
             x = self.ar_text_prenet(x)
             x = self.ar_text_position(x)
@@ -608,9 +605,7 @@ class VALLE(VALLF):
 
             # Add language embedding, P A
             prompt_language_id = torch.LongTensor(np.array([self.language_ID['en']])).to(x.device)
-            text_language_id = torch.LongTensor(np.array([self.language_ID['en']])).to(x.device)
-            x[:, :enroll_x_lens, :] += self.nar_language_embedding(prompt_language_id)
-            x[:, enroll_x_lens:, :] += self.nar_language_embedding(text_language_id)
+            x[:, :, :] += self.nar_language_embedding(prompt_language_id)
 
             x = self.nar_text_prenet(x)
             x = self.nar_text_position(x)
@@ -745,7 +740,7 @@ class VALLE(VALLF):
         kv_cache = None
         use_kv_caching = True
         sum_logprobs = torch.zeros(best_of, device=y.device)  # implement batch decoding here
-        x = x.repeat(best_of, 1, 1)
+        x = x.repeat(best_of, 1, 1) # Copy x?
         y = y.repeat(best_of, 1)
 
         while True:

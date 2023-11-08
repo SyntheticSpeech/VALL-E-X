@@ -846,6 +846,12 @@ def train_one_epoch(
         params.best_train_epoch = params.cur_epoch
         params.best_train_loss = params.train_loss
         logging.info(
+            f"loss type {type(tot_loss['loss'])} {type(tot_loss['frames'])}"
+        )
+        logging.info(
+            f"loss value {tot_loss['loss']} {tot_loss['frames']}"
+        )
+        logging.info(
             f"New best_train_loss {loss_value} at {params.best_train_epoch}"
         )
 
