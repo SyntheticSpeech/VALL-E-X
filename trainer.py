@@ -318,7 +318,7 @@ def get_params() -> AttributeDict:
             "best_train_epoch": -1,
             "best_valid_epoch": -1,
             "batch_idx_train": 0,
-            "log_interval": 1,  # 10: debug 100: train
+            "log_interval": 6,  # 10: debug 100: train
             "reset_interval": 200,
             "valid_interval": 10000,
             # parameters for TTS
@@ -842,15 +842,11 @@ def train_one_epoch(
 
     loss_value = tot_loss["loss"] / tot_loss["frames"]
     params.train_loss = loss_value
+    print(f"loss type {type(tot_loss['loss'])} {type(tot_loss['frames'])}")
+    print(f"loss value {tot_loss['loss']} {tot_loss['frames']}")
     if params.train_loss < params.best_train_loss:
         params.best_train_epoch = params.cur_epoch
         params.best_train_loss = params.train_loss
-        logging.info(
-            f"loss type {type(tot_loss['loss'])} {type(tot_loss['frames'])}"
-        )
-        logging.info(
-            f"loss value {tot_loss['loss']} {tot_loss['frames']}"
-        )
         logging.info(
             f"New best_train_loss {loss_value} at {params.best_train_epoch}"
         )
@@ -883,8 +879,8 @@ def freeze_model(model:nn.Module, train_stage:int):
                 for param in layer.parameters():
                     param.requires_grad = False
 
-        for name, param in model.named_parameters():
-            print(f'{name}: requires_grad={param.requires_grad}')
+        # for name, param in model.named_parameters():
+        #     print(f'{name}: requires_grad={param.requires_grad}')
     elif train_stage == 2:
         # Iterate through the layers and freeze them
         for layer in model.children():
@@ -895,8 +891,8 @@ def freeze_model(model:nn.Module, train_stage:int):
                 for param in layer.parameters():
                     param.requires_grad = False
 
-        for name, param in model.named_parameters():
-            print(f'{name}: requires_grad={param.requires_grad}')
+        # for name, param in model.named_parameters():
+        #     print(f'{name}: requires_grad={param.requires_grad}')
 
 
 def run(rank, world_size, args):
@@ -915,7 +911,7 @@ def run(rank, world_size, args):
     # print(params.prepend_bos)
     params.update(vars(args))
     params.prepend_bos = True # Hao: manual change prepend_bos back to True
-    print(params.prepend_bos)
+    # print(params.prepend_bos)
 
     fix_random_seed(params.seed)
     rng = random.Random(params.seed)
@@ -949,7 +945,7 @@ def run(rank, world_size, args):
     model = get_model(params)
     with open(f"{params.exp_dir}/model.txt", "w") as f:
         print(model)
-        print(model, file=f)
+        # print(model, file=f)
 
     num_param = sum([p.numel() for p in model.parameters()])
     logging.info(f"Number of model parameters: {num_param}")
