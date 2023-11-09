@@ -55,6 +55,26 @@ Several key things to notice:
 | AR Train |  4.396 | 0.4497 | 
 | AR Valid |  4.504 | 0.4697 | 
 
+## Run 6
+- libriTTS dataset: dev-clean, test-clean (train cut 08:58:13, dev cut 00:47:31, test cut 08:34:09)
+- learning rate 1e-5, ScaledAdam, warmup-epochs 200
+- AR, 20 epochs, (did not include validation as valid_interval was wrong)
+
+| Phase      | loss | Top10Accuracy    |
+| ----------- | ----------- | ----------- | 
+| AR Train |  5.748 | 0.1868 | 
+
+## Run 7
+- learning rate 0.04, ScaledAdam, warmup-epochs 200
+- AR 20 epochs, NAR 20 epochs
+
+| Phase      | loss | Top10Accuracy    |
+| ----------- | ----------- | ----------- | 
+| AR Train |  5.748 | 0.1868 | 
+| AR Valid |  5.923 | 0.1715 | 
+| NAR Train | 5.669 | 0.2045 | 
+| NAR Valid | 5.759  | 0.1858 | 
+
 ## Implementation details
 ### prepare dataset
 As lifeiteng uses Lhotse, we have to make our dataset something like libriTTS.
@@ -68,4 +88,19 @@ We also need to use its CutSet as dataset class, and its Sampler when constructi
 
 ### GPU RAM
 Bought Colab Pro. Met a incredibaly unsolvalble problem with K2 library, CUDA compiler, torch version and python version on AWS SageMaker. So AWS SageMaker, ****.
+
+### Tokenizer
+Lifeiteng and Plachtaa uses different tokenizer, resulting difference in TextTokenCollator
+
+Lifeiteng Tokenize logic: text_prompt -> tokenizer (espeak) -> phonemes -> Collator (using precomputed SymbolTable) -> index sequence 
+
+Plachtaa Tokenize logic: text_prompt -> Add language ID -> tokenizer (PhonemeBpeTokenizer, with pre-defined index mapping) -> index sequence directly, Collator just need to perform EOS/DOS/PAD
+
+The most important thing to notice is that Plachtaa added language ID to text prompt:
+```
+text = "[EN]" + text + "[EN]"
+```
+Besides, phoneme index mapping is different. For example, PAD in PhonemeBpeTokenizer is 3, but in Lifeiteng's Tokenizer is 0.
+
+
 
