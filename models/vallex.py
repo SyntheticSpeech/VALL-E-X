@@ -502,6 +502,11 @@ class VALLE(VALLF):
         assert y_lens.ndim == 1, y_lens.shape
 
         # NOTE: x has been padded in TextTokenCollater
+        '''
+        Icefall make_pad_mask return a 2-D bool tensor, where masked positions
+        are filled with `True` and non-masked positions are filled with `False`.
+        也就是说, 这是根据pad前每一个seq的真实长度做的一个mask
+        '''
         x_mask = make_pad_mask(x_lens).to(x.device)
         y_mask = make_pad_mask(y_lens).to(y.device)
         y_mask_int = y_mask.type(torch.int64)
@@ -509,7 +514,7 @@ class VALLE(VALLF):
         text = x
         codes = y.type(torch.int64) * (1 - y_mask_int.unsqueeze(dim=-1))
 
-        y, targets = self.pad_y_eos(
+        y, targets = self.pad_y_eos( # Add two EOS to audio prompt
             codes[..., 0], y_mask_int, eos_id=NUM_AUDIO_TOKENS
         )
 
@@ -518,10 +523,10 @@ class VALLE(VALLF):
         metrics = {}
         total_loss = 0.0
 
-        xy_padding_mask = torch.concat([x_mask, y_mask], dim=1)
+        xy_padding_mask = torch.concat([x_mask, y_mask], dim=1) # AR input is the concatenation of x and c:,1
         if self.ar_audio_prepend_bos:
             ar_xy_padding_mask = torch.concat(
-                [x_mask, F.pad(y_mask, (1, 0), value=False)], dim=1
+                [x_mask, F.pad(y_mask, (1, 0), value=False)], dim=1 
             )
         else:
             ar_xy_padding_mask = xy_padding_mask
@@ -532,7 +537,7 @@ class VALLE(VALLF):
 
             # language embedding, only english
             prompt_language_id = torch.LongTensor(np.array([self.language_ID['en']])).to(x.device)
-            x[:, :, :] += self.ar_language_embedding(prompt_language_id)
+            x += self.ar_language_embedding(prompt_language_id)
 
             x = self.ar_text_prenet(x)
             x = self.ar_text_position(x)
@@ -571,7 +576,7 @@ class VALLE(VALLF):
             y_emb = self.ar_audio_prenet(y_emb)
             y_pos = self.ar_audio_position(y_emb)
 
-            xy_pos = torch.concat([x, y_pos], dim=1)
+            xy_pos = torch.concat([x, y_pos], dim=1) # AR input is the concatenation of x and c:,1
 
             xy_dec, _ = self.ar_decoder(
                 (xy_pos, None),
@@ -605,7 +610,7 @@ class VALLE(VALLF):
 
             # Add language embedding, P A
             prompt_language_id = torch.LongTensor(np.array([self.language_ID['en']])).to(x.device)
-            x[:, :, :] += self.nar_language_embedding(prompt_language_id)
+            x += self.nar_language_embedding(prompt_language_id)
 
             x = self.nar_text_prenet(x)
             x = self.nar_text_position(x)
@@ -771,13 +776,13 @@ class VALLE(VALLF):
                 xy_pos = xy_pos[:, [-1]]
             else:
                 pass
-
             xy_dec, kv_cache = self.ar_decoder.infer( # P M
                 xy_pos,
                 mask=xy_attn_mask,
                 past_kv=kv_cache,
                 use_cache=use_kv_caching,
             )
+    
             # xy_dec, _ = self.ar_decoder(
             #     (xy_pos, None),
             #     mask=xy_attn_mask,

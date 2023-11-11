@@ -101,22 +101,22 @@ class TextTokenCollater:
 
         '''
         由于下面tokenizer方式的不同, plachtaa的这一步的seq和lifeitong不一样
+        由于我们使用plachtaa的tokenizer, 这里做了改动
         '''
 
-        if self.mode:
-            tokens_batch = torch.from_numpy(
-                np.array(
-                    [[self.token2idx[token] for token in seq] for seq in seqs],
-                    dtype=np.int64,
-                )
+
+        # tokens_batch = torch.from_numpy(
+        #     np.array(
+        #         [[self.token2idx[token] for token in seq] for seq in seqs],
+        #         dtype=np.int64,
+        #     )
+        # )
+        tokens_batch = torch.from_numpy(
+            np.array(
+                [seq for seq in seqs],
+                dtype=np.int64,
             )
-        else:
-            tokens_batch = torch.from_numpy(
-                np.array(
-                    [seq for seq in seqs],
-                    dtype=np.int64,
-                )
-            )
+        )
         tokens_lens = torch.IntTensor(
             [
                 len(seq) + int(self.add_eos) + int(self.add_bos)

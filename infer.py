@@ -142,6 +142,7 @@ def load_model(checkpoint, device):
     checkpoint = torch.load(checkpoint, map_location=device)
 
     args = AttributeDict(checkpoint)
+    print(args)
     model = get_model(args)
 
     missing_keys, unexpected_keys = model.load_state_dict(
