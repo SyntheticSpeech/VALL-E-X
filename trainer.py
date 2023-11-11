@@ -916,6 +916,8 @@ def freeze_model(model:nn.Module, train_stage:int):
 
         # for name, param in model.named_parameters():
         #     print(f'{name}: requires_grad={param.requires_grad}')
+    else:
+        raise ValueError(f"Unrecognized train stage {train_stage}")
 
 
 def run(rank, world_size, args):

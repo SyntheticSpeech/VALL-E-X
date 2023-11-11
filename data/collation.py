@@ -132,7 +132,8 @@ Plachtaa这个函数的input argument不要了, 区别在于lifeiteng用的自�
 '''
 def get_text_token_collater() -> TextTokenCollater:
     collater = TextTokenCollater(
-        ['0'], add_bos=False, add_eos=False, pad_symbol = '3', mode=False
+        ['0'], add_bos=False, add_eos=False, 
+        bos_symbol='1', eos_symbol='2', pad_symbol = '3', mode=False
     )
     return collater
 
