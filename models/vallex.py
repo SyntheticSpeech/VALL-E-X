@@ -290,7 +290,7 @@ class VALLF(nn.Module):
         if stage == 2:
             for name, param in self.named_parameters():
                 if name.startswith("nar_"):
-                    #print(f"NAR parameter: {name}")
+                    print(f"NAR parameter: {name}, require grad: {param.requires_grad}")
                     yield param
 
     def stage_named_parameters(

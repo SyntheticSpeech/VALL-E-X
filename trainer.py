@@ -968,9 +968,9 @@ def run(rank, world_size, args):
 
     logging.info("About to create model")
     model = get_model(params)
-    with open(f"{params.exp_dir}/model.txt", "w") as f:
-        print(model)
-        # print(model, file=f)
+    # with open(f"{params.exp_dir}/model.txt", "w") as f:
+    #     print(model)
+    #     print(model, file=f)
 
     num_param = sum([p.numel() for p in model.parameters()])
     logging.info(f"Number of model parameters: {num_param}")
@@ -1107,6 +1107,9 @@ def run(rank, world_size, args):
     if checkpoints and "grad_scaler" in checkpoints and checkpoints["grad_scaler"]:
         logging.info("Loading grad scaler state dict")
         scaler.load_state_dict(checkpoints["grad_scaler"])
+
+    for name, param in model.named_parameters():
+        print(f'{name}: requires_grad={param.requires_grad}')
 
     for epoch in range(params.start_epoch, params.num_epochs + 1):
         if isinstance(scheduler, Eden):
