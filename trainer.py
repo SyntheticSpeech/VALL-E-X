@@ -1012,6 +1012,7 @@ def run(rank, world_size, args):
     # print(params.prepend_bos)
     params.update(vars(args))
     params.prepend_bos = True # Hao: manual change prepend_bos back to True
+    params.share_embedding = False # Hao: manual change share_embedding for NAR training
     # print(params.prepend_bos)
 
     fix_random_seed(params.seed)
@@ -1184,8 +1185,8 @@ def run(rank, world_size, args):
         logging.info("Loading grad scaler state dict")
         scaler.load_state_dict(checkpoints["grad_scaler"])
 
-    for name, param in model.named_parameters():
-        print(f'{name}: requires_grad={param.requires_grad}')
+    # for name, param in model.named_parameters():
+    #     print(f'{name}: requires_grad={param.requires_grad}')
 
     for epoch in range(params.start_epoch, params.num_epochs + 1):
         if isinstance(scheduler, Eden):
