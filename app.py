@@ -1,6 +1,6 @@
 import os
 import time
-from flask import Flask, render_template, request, send_file, redirect, send_from_directory
+from flask import Flask, render_template, request, send_file, redirect, send_from_directory, url_for
 from werkzeug.utils import secure_filename
 from scipy.io.wavfile import write as write_wav
 
@@ -71,8 +71,8 @@ def upload_file():
     print(f"[generate_audio] CPU time: {t_g_e[1] - t_g_s[1]:.2f} seconds")
 
     t_w_s = time.perf_counter(), time.process_time()
-    write_wav("cloned.wav", 24000, audio_array)
-    synthetic_audio_path = os.path.abspath("cloned.wav")
+    write_wav("static/cloned.wav", 24000, audio_array)
+    # synthetic_audio_path = os.path.abspath("cloned.wav")
     t_w_e = time.perf_counter(), time.process_time()
     print(f"[write_wav] Real time: {t_w_e[0] - t_w_s[0]:.2f} seconds")
     print(f"[write_wav] CPU time: {t_w_e[1] - t_w_s[1]:.2f} seconds")
@@ -80,14 +80,20 @@ def upload_file():
     t2 = time.perf_counter(), time.process_time()
     print(f"[Inference] Real time: {t2[0] - t1[0]:.2f} seconds")
     print(f"[Inference] CPU time: {t2[1] - t1[1]:.2f} seconds")
-    print(f"Generated audio file path: {synthetic_audio_path}")
+    # print(f"Generated audio file path: {synthetic_audio_path}")
     
     # Extract the directory and filename separately
-    directory, filename = os.path.split(synthetic_audio_path)
+    # directory, filename = os.path.split(synthetic_audio_path)
+    synthetic_audio_path = "cloned.wav"
 
     # Use send_from_directory to send the file without the full path
-    return send_from_directory(directory, filename, as_attachment=True)
+    # return send_from_directory(directory, filename, as_attachment=True)
+    return redirect(url_for('play_audio', audio_path=synthetic_audio_path))
 
+@app.route('/play')
+def play_audio():
+    audio_path = request.args.get('audio_path')
+    return render_template('play_audio.html', audio_path=audio_path)
 
 def init():
     t1 = time.perf_counter(), time.process_time()

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Play Audio</title>
+    <!-- Include any additional CSS or JS here -->
+</head>
+<body>
+    <h1>Generated Audio</h1>
+    <audio controls>
+        <source src="{{ url_for('static', filename=audio_path) }}" type="audio/wav">
+        Your browser does not support the audio element.
+    </audio>
+</body>
+</html>
