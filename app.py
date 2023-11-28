@@ -23,7 +23,7 @@ def allowed_file(filename):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
+    if 'audioPrompt' not in request.files:
         print(f"Uploaded file was not found. Please check the path of the uploaded file")
         return redirect(request.url)
 
@@ -64,6 +64,7 @@ def upload_file():
 
     # Use send_from_directory to send the file without the full path
     return send_from_directory(directory, filename, as_attachment=True)
+
 
 def init():
     t1 = time.perf_counter(), time.process_time()
