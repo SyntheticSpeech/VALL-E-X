@@ -49,11 +49,22 @@ def upload_file():
     print(filepath)
     t1 = time.perf_counter(), time.process_time()
     if name not in saved_prompts:
+        t_m_s = time.perf_counter(), time.process_time()
         make_prompt(name=name, audio_prompt_path=filepath)
         saved_prompts.add(name)
+        t_m_e = time.perf_counter(), time.process_time()
+        print(f"[make_prompt] Real time: {t_m_e[0] - t_m_s[0]:.2f} seconds")
+        print(f"[make_prompt] CPU time: {t_m_e[1] - t_m_s[1]:.2f} seconds")
+
+    t_g_s = time.perf_counter(), time.process_time()
     audio_array = generate_audio(text_prompt, prompt=name)
+    t_g_e = time.perf_counter(), time.process_time()
+    print(f"[generate_audio] Real time: {t_g_e[0] - t_g_s[0]:.2f} seconds")
+    print(f"[generate_audio] CPU time: {t_g_e[1] - t_g_s[1]:.2f} seconds")
+
     write_wav("cloned.wav", 24000, audio_array)
     synthetic_audio_path = os.path.abspath("cloned.wav")
+
     t2 = time.perf_counter(), time.process_time()
     print(f"[Inference] Real time: {t2[0] - t1[0]:.2f} seconds")
     print(f"[Inference] CPU time: {t2[1] - t1[1]:.2f} seconds")

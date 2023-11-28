@@ -41,9 +41,9 @@ def transcribe_one(model, audio_path):
     mel = whisper.log_mel_spectrogram(audio).to(model.device)
 
     # detect the spoken language
-    _, probs = model.detect_language(mel)
-    print(f"Detected language: {max(probs, key=probs.get)}")
-    lang = max(probs, key=probs.get)
+    # _, probs = model.detect_language(mel)
+    # print(f"Detected language: {max(probs, key=probs.get)}")
+    # lang = max(probs, key=probs.get)
     # decode the audio
     options = whisper.DecodingOptions(temperature=1.0, best_of=5, fp16=False if device == torch.device("cpu") else True, sample_len=150)
     result = whisper.decode(model, mel, options)
@@ -57,11 +57,10 @@ def transcribe_one(model, audio_path):
     t2 = time.perf_counter(), time.process_time()
     print(f"[Transcribe One] Real time: {t2[0] - t1[0]:.2f} seconds")
     print(f"[Transcribe One] CPU time: {t2[1] - t1[1]:.2f} seconds")
-    return lang, text_pr
+    return text_pr
 
 def make_prompt(name, audio_prompt_path, transcript=None):
     global model, text_collater, text_tokenizer, codec
-    t1 = time.perf_counter(), time.process_time()
     wav_pr, sr = torchaudio.load(audio_prompt_path)
     # check length
     if wav_pr.size(-1) / sr > 15:
@@ -89,9 +88,6 @@ def make_prompt(name, audio_prompt_path, transcript=None):
     save_path = os.path.join("./customs/", f"{name}.npz")
     np.savez(save_path, audio_tokens=audio_tokens, text_tokens=text_tokens, lang_code=lang2code[lang_pr])
     logging.info(f"Successful. Prompt saved to {save_path}")
-    t2 = time.perf_counter(), time.process_time()
-    print(f"[make_prompt] Real time: {t2[0] - t1[0]:.2f} seconds")
-    print(f"[make_prompt] CPU time: {t2[1] - t1[1]:.2f} seconds")
 
 def download_whisper():
     global whisper_model
@@ -111,20 +107,21 @@ def make_transcript(name, wav, sr, transcript=None):
     if wav.ndim == 1:
         wav = wav.unsqueeze(0)
     assert wav.ndim and wav.size(0) == 1
+    lang = "en" # Fix to English
     if transcript is None or transcript == "":
         logging.info("Transcript not given, using Whisper...")
         assert whisper_model is not None
         torchaudio.save(f"./prompts/{name}.wav", wav, sr)
-        lang, text = transcribe_one(whisper_model, f"./prompts/{name}.wav")
-        lang_token = lang2token[lang]
-        text = lang_token + text + lang_token
+        transcript = transcribe_one(whisper_model, f"./prompts/{name}.wav")
         os.remove(f"./prompts/{name}.wav")
         whisper_model.cpu()
-    else:
-        text = transcript
-        lang, _ = langid.classify(text)
-        lang_token = lang2token[lang]
-        text = lang_token + text + lang_token
+    # else:
+    #     text = transcript
+        # lang, _ = langid.classify(text)
+        # lang_token = lang2token[lang]
+        # text = lang_token + text + lang_token
+    lang_token = lang2token[lang]
+    text = lang_token + transcript + lang_token
 
     torch.cuda.empty_cache()
     t2 = time.perf_counter(), time.process_time()
