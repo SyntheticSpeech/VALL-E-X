@@ -7,7 +7,7 @@ from scipy.io.wavfile import write as write_wav
 from utils.generation import preload_models, generate_audio, generate_audio_from_long_text
 from utils.prompt_making import make_prompt, download_whisper
 
-saved_prompts = []
+saved_prompts = {}
 
 app = Flask(__name__)
 
@@ -27,40 +27,43 @@ def upload_file():
         print(f"Uploaded file was not found. Please check the path of the uploaded file")
         return redirect(request.url)
 
-    file = request.files['file']
+    name = request.form.get('name')
+    text_prompt = request.form.get('textPrompt')
+    file = request.files['audioPrompt']
+
+    print(f"name: {name}, text: {text_prompt}, file: {file}")
 
     if file.filename == '':
         # Handle the case where the file has no selected file
         print(f"the file directory is empty")
         return redirect(request.url)
 
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-        
-        print(filepath)
-        t1 = time.perf_counter(), time.process_time()
-        text_prompt = """
-        Hey, Traveler, Listen to this, This machine has taken my voice, and now it can talk just like me!
-        """
-        make_prompt(name="vtck", audio_prompt_path=filepath)
-        audio_array = generate_audio(text_prompt, prompt="vtck")
-        write_wav("cloned.wav", 24000, audio_array)
-        synthetic_audio_path = os.path.abspath("cloned.wav")
-        t2 = time.perf_counter(), time.process_time()
-        print(f"[Inference] Real time: {t2[0] - t1[0]:.2f} seconds")
-        print(f"[Inference] CPU time: {t2[1] - t1[1]:.2f} seconds")
-        print(f"Generated audio file path: {synthetic_audio_path}")
-        
-        # Extract the directory and filename separately
-        directory, filename = os.path.split(synthetic_audio_path)
-
-        # Use send_from_directory to send the file without the full path
-        return send_from_directory(directory, filename, as_attachment=True)
-    else:
+    if not (file and allowed_file(file.filename)):
         # Handle the case where the file has an invalid extension
         return redirect(request.url)
+
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+    
+    print(filepath)
+    t1 = time.perf_counter(), time.process_time()
+    if name not in saved_prompts:
+        make_prompt(name=name, audio_prompt_path=filepath)
+        saved_prompts.add(name)
+    audio_array = generate_audio(text_prompt, prompt=name)
+    write_wav("cloned.wav", 24000, audio_array)
+    synthetic_audio_path = os.path.abspath("cloned.wav")
+    t2 = time.perf_counter(), time.process_time()
+    print(f"[Inference] Real time: {t2[0] - t1[0]:.2f} seconds")
+    print(f"[Inference] CPU time: {t2[1] - t1[1]:.2f} seconds")
+    print(f"Generated audio file path: {synthetic_audio_path}")
+    
+    # Extract the directory and filename separately
+    directory, filename = os.path.split(synthetic_audio_path)
+
+    # Use send_from_directory to send the file without the full path
+    return send_from_directory(directory, filename, as_attachment=True)
 
 def init():
     t1 = time.perf_counter(), time.process_time()

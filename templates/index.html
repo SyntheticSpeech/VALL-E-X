@@ -4,13 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Synthetic Audio Generation</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Synthetic Audio Generation</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <label for="file">Upload Audio File:</label>
-        <input type="file" name="file" accept=".wav" required>
-        <button type="submit">Generate Synthetic Audio</button>
-    </form>
+    <div class="container">
+        <form action="/upload" method="post">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name">
+            </div>
+
+            <div class="form-group">
+                <label for="textPrompt">Text Prompt:</label>
+                <textarea id="textPrompt" name="textPrompt" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="audioPrompt">Audio Prompt:</label>
+                <input type="file" id="audioPrompt" name="audioPrompt" accept="audio/*">
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 </body>
 </html>
