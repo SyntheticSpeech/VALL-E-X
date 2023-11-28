@@ -44,10 +44,22 @@ def upload_file():
         text_prompt = """
         Hey, Traveler, Listen to this, This machine has taken my voice, and now it can talk just like me!
         """
+
+        t_m_s = time.perf_counter(), time.process_time()
         make_prompt(name="vtck", audio_prompt_path=filepath)
+        t_m_e = time.perf_counter(), time.process_time()
+        print(f"[Inference] Real time: {t_m_e[0] - t_m_s[0]:.2f} seconds")
+        print(f"[Inference] CPU time: {t_m_e[1] - t_m_s[1]:.2f} seconds")
+
+        t_g_s = time.perf_counter(), time.process_time()
         audio_array = generate_audio(text_prompt, prompt="vtck")
+        t_g_e = time.perf_counter(), time.process_time()
+        print(f"[Inference] Real time: {t_g_e[0] - t_g_s[0]:.2f} seconds")
+        print(f"[Inference] CPU time: {t_g_e[1] - t_g_s[1]:.2f} seconds")
+
         write_wav("cloned.wav", 24000, audio_array)
         synthetic_audio_path = os.path.abspath("cloned.wav")
+
         t2 = time.perf_counter(), time.process_time()
         print(f"[Inference] Real time: {t2[0] - t1[0]:.2f} seconds")
         print(f"[Inference] CPU time: {t2[1] - t1[1]:.2f} seconds")
@@ -72,4 +84,4 @@ def init():
 
 if __name__ == "__main__":
     init()
-    app.run(debug=True, port=int(os.environ.get("PORT", 5000))) #debug=True
+    app.run(port=int(os.environ.get("PORT", 5000))) #debug=True

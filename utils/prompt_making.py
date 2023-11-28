@@ -4,6 +4,7 @@ import torchaudio
 import logging
 import langid
 import whisper
+import time
 langid.set_languages(['en', 'zh', 'ja'])
 
 import numpy as np
@@ -31,6 +32,7 @@ whisper_model = None
 
 @torch.no_grad()
 def transcribe_one(model, audio_path):
+    t1 = time.perf_counter(), time.process_time()
     # load audio and pad/trim it to fit 30 seconds
     audio = whisper.load_audio(audio_path)
     audio = whisper.pad_or_trim(audio)
@@ -52,10 +54,14 @@ def transcribe_one(model, audio_path):
     text_pr = result.text
     if text_pr.strip(" ")[-1] not in "?!.,。，？！。、":
         text_pr += "."
+    t2 = time.perf_counter(), time.process_time()
+    print(f"[Transcribe One] Real time: {t2[0] - t1[0]:.2f} seconds")
+    print(f"[Transcribe One] CPU time: {t2[1] - t1[1]:.2f} seconds")
     return lang, text_pr
 
 def make_prompt(name, audio_prompt_path, transcript=None):
     global model, text_collater, text_tokenizer, codec
+    t1 = time.perf_counter(), time.process_time()
     wav_pr, sr = torchaudio.load(audio_prompt_path)
     # check length
     if wav_pr.size(-1) / sr > 15:
@@ -83,6 +89,9 @@ def make_prompt(name, audio_prompt_path, transcript=None):
     save_path = os.path.join("./customs/", f"{name}.npz")
     np.savez(save_path, audio_tokens=audio_tokens, text_tokens=text_tokens, lang_code=lang2code[lang_pr])
     logging.info(f"Successful. Prompt saved to {save_path}")
+    t2 = time.perf_counter(), time.process_time()
+    print(f"[make_prompt] Real time: {t2[0] - t1[0]:.2f} seconds")
+    print(f"[make_prompt] CPU time: {t2[1] - t1[1]:.2f} seconds")
 
 def download_whisper():
     global whisper_model
@@ -92,7 +101,7 @@ def download_whisper():
         whisper_model.to(device)
 
 def make_transcript(name, wav, sr, transcript=None):
-
+    t1 = time.perf_counter(), time.process_time()
     if not isinstance(wav, torch.FloatTensor):
         wav = torch.tensor(wav)
     if wav.abs().max() > 1:
@@ -118,4 +127,7 @@ def make_transcript(name, wav, sr, transcript=None):
         text = lang_token + text + lang_token
 
     torch.cuda.empty_cache()
+    t2 = time.perf_counter(), time.process_time()
+    print(f"[make_transcript] Real time: {t2[0] - t1[0]:.2f} seconds")
+    print(f"[make_transcript] CPU time: {t2[1] - t1[1]:.2f} seconds")
     return text, lang
