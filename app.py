@@ -70,8 +70,12 @@ def upload_file():
     print(f"[generate_audio] Real time: {t_g_e[0] - t_g_s[0]:.2f} seconds")
     print(f"[generate_audio] CPU time: {t_g_e[1] - t_g_s[1]:.2f} seconds")
 
+    t_w_s = time.perf_counter(), time.process_time()
     write_wav("cloned.wav", 24000, audio_array)
     synthetic_audio_path = os.path.abspath("cloned.wav")
+    t_w_e = time.perf_counter(), time.process_time()
+    print(f"[write_wav] Real time: {t_w_e[0] - t_w_s[0]:.2f} seconds")
+    print(f"[write_wav] CPU time: {t_w_e[1] - t_w_s[1]:.2f} seconds")
 
     t2 = time.perf_counter(), time.process_time()
     print(f"[Inference] Real time: {t2[0] - t1[0]:.2f} seconds")
