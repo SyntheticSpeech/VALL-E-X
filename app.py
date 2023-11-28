@@ -1,7 +1,13 @@
 import os
+import time
 from flask import Flask, render_template, request, send_file, redirect, send_from_directory
-from utils.script import generate_synthetic_audio
 from werkzeug.utils import secure_filename
+from scipy.io.wavfile import write as write_wav
+
+from utils.generation import preload_models, generate_audio, generate_audio_from_long_text
+from utils.prompt_making import make_prompt, download_whisper
+
+saved_prompts = []
 
 app = Flask(__name__)
 
@@ -32,12 +38,19 @@ def upload_file():
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
-
+        
+        print(filepath)
+        t1 = time.perf_counter(), time.process_time()
         text_prompt = """
         Hey, Traveler, Listen to this, This machine has taken my voice, and now it can talk just like me!
         """
-        synthetic_audio_path = generate_synthetic_audio(text_prompt, uploaded_file_path=filepath)
-
+        make_prompt(name="vtck", audio_prompt_path=filepath)
+        audio_array = generate_audio(text_prompt, prompt="vtck")
+        write_wav("cloned.wav", 24000, audio_array)
+        synthetic_audio_path = os.path.abspath("cloned.wav")
+        t2 = time.perf_counter(), time.process_time()
+        print(f"[Inference] Real time: {t2[0] - t1[0]:.2f} seconds")
+        print(f"[Inference] CPU time: {t2[1] - t1[1]:.2f} seconds")
         print(f"Generated audio file path: {synthetic_audio_path}")
         
         # Extract the directory and filename separately
@@ -49,8 +62,14 @@ def upload_file():
         # Handle the case where the file has an invalid extension
         return redirect(request.url)
 
-#if __name__ == '__main__':
-#    app.run(debug=True)
+def init():
+    t1 = time.perf_counter(), time.process_time()
+    preload_models()
+    download_whisper()
+    t2 = time.perf_counter(), time.process_time()
+    print(f"[Init] Real time: {t2[0] - t1[0]:.2f} seconds")
+    print(f"[Init] CPU time: {t2[1] - t1[1]:.2f} seconds")
 
 if __name__ == "__main__":
-    app.run(port=int(os.environ.get("PORT", 5000)))
+    init()
+    app.run(debug=True, port=int(os.environ.get("PORT", 5000))) #debug=True

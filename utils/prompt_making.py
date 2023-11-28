@@ -84,6 +84,12 @@ def make_prompt(name, audio_prompt_path, transcript=None):
     np.savez(save_path, audio_tokens=audio_tokens, text_tokens=text_tokens, lang_code=lang2code[lang_pr])
     logging.info(f"Successful. Prompt saved to {save_path}")
 
+def download_whisper():
+    global whisper_model
+    if whisper_model is None:
+        logging.info(f"Downloading whisper model")
+        whisper_model = whisper.load_model("medium", download_root=os.path.join(os.getcwd(), "whisper"))
+        whisper_model.to(device)
 
 def make_transcript(name, wav, sr, transcript=None):
 
@@ -98,10 +104,7 @@ def make_transcript(name, wav, sr, transcript=None):
     assert wav.ndim and wav.size(0) == 1
     if transcript is None or transcript == "":
         logging.info("Transcript not given, using Whisper...")
-        global whisper_model
-        if whisper_model is None:
-            whisper_model = whisper.load_model("medium", download_root=os.path.join(os.getcwd(), "whisper"))
-        whisper_model.to(device)
+        assert whisper_model is not None
         torchaudio.save(f"./prompts/{name}.wav", wav, sr)
         lang, text = transcribe_one(whisper_model, f"./prompts/{name}.wav")
         lang_token = lang2token[lang]

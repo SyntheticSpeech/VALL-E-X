@@ -1,0 +1,5 @@
+whisper/
+checkpoints/
+cloned.wav
+__pycache__/
+customs/
