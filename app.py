@@ -31,6 +31,14 @@ def upload_file():
     text_prompt = request.form.get('textPrompt')
     file = request.files['audioPrompt']
 
+    if name == "":
+        print("Name not found.")
+        return redirect(request.url)
+
+    if text_prompt == "":
+        print("Text not found.")
+        return redirect(request.url)
+
     print(f"name: {name}, text: {text_prompt}, file: {file}")
 
     if file.filename == '':
