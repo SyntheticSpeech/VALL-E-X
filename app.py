@@ -7,7 +7,7 @@ from scipy.io.wavfile import write as write_wav
 from utils.generation import preload_models, generate_audio, generate_audio_from_long_text
 from utils.prompt_making import make_prompt, download_whisper
 
-saved_prompts = {}
+saved_prompts = set()
 
 app = Flask(__name__)
 
