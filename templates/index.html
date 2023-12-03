@@ -8,10 +8,11 @@
 </head>
 <body>
     <div class="container">
-        <form action="/upload" method="post" enctype="multipart/form-data">
+        <h1>Synthetic Audio Generation</h1>
+        <form action="/generate" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name">
+                <input type="text" id="name" name="name" required>
             </div>
 
             <div class="form-group">
@@ -22,6 +23,15 @@
             <div class="form-group">
                 <label for="audioPrompt">Audio Prompt:</label>
                 <input type="file" id="audioPrompt" name="audioPrompt" accept="audio/*">
+            </div>
+
+            <div class="form-group">
+                <label for="modelOption">Model:</label>
+                <!-- <input type="text" id="modelOption" name="modelOption"> -->
+                <select name="modelOption" id="modelOption">
+                    <option value="pretrain">pretrain</option>
+                    <option value="fine-tune">fine-tune</option>
+                </select>
             </div>
 
             <button type="submit">Submit</button>
