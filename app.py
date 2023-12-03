@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, send_file, redirect, send_fro
 from werkzeug.utils import secure_filename
 from scipy.io.wavfile import write as write_wav
 
-from utils.generation import preload_models, generate_audio, generate_audio_from_long_text
+from utils.generation import download_models, preload_models, generate_audio, generate_audio_from_long_text
 from utils.prompt_making import make_prompt, download_whisper
 
 saved_prompts = set()
@@ -97,6 +97,7 @@ def play_audio():
 
 def init():
     t1 = time.perf_counter(), time.process_time()
+    download_models()
     preload_models()
     download_whisper()
     t2 = time.perf_counter(), time.process_time()

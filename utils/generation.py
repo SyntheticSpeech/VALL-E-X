@@ -36,9 +36,12 @@ url = 'https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt
 
 checkpoints_dir = "./checkpoints/"
 
-model_checkpoint_name = "vallex-checkpoint.pt"
+model_checkpoint_name = {
+    "pretrain" : "vallex-checkpoint.pt",
+    "fine-tune" : "fine_tune_vallex.pt"
+}
 
-model = None
+models = {}
 
 codec = None
 
@@ -47,10 +50,16 @@ vocos = None
 text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
 text_collater = get_text_token_collater()
 
-def preload_models():
-    global model, codec, vocos
+def download_fine_tune_model():
+    if not os.path.exists(os.path.join(checkpoints_dir, model_checkpoint_name['fine-tune'])):
+        import gdown
+        drive_id = "1-uExmAUpa8G9cWFhA87QmAfiDBeD4XoQ"
+        output = f"{checkpoints_dir}/{model_checkpoint_name['fine-tune']}"
+        gdown.download(f'https://drive.google.com/uc?id={drive_id}', output, quiet=False)
+
+def download_plachtaa_checkpoint():
     if not os.path.exists(checkpoints_dir): os.mkdir(checkpoints_dir)
-    if not os.path.exists(os.path.join(checkpoints_dir, model_checkpoint_name)):
+    if not os.path.exists(os.path.join(checkpoints_dir, model_checkpoint_name['pretrain'])):
         import wget
         try:
             logging.info(
@@ -63,6 +72,13 @@ def preload_models():
             raise Exception(
                 "\n Model weights download failed, please go to 'https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt'"
                 "\n manually download model weights and put it to {} .".format(os.getcwd() + "\checkpoints"))
+
+def download_models():
+    download_plachtaa_checkpoint()
+    download_fine_tune_model()
+
+def preload_models():
+    global model, codec, vocos
     # VALL-E
     model = VALLE(
         N_DIM,
@@ -76,7 +92,8 @@ def preload_models():
         prepend_bos=True,
         num_quantizers=NUM_QUANTIZERS,
     ).to(device)
-    checkpoint = torch.load(os.path.join(checkpoints_dir, model_checkpoint_name), map_location='cpu')
+    model_name = 'fine-tune'
+    checkpoint = torch.load(os.path.join(checkpoints_dir, model_checkpoint_name[model_name]), map_location='cpu')
     missing_keys, unexpected_keys = model.load_state_dict(
         checkpoint["model"], strict=True
     )
