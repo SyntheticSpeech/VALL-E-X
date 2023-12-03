@@ -2,17 +2,17 @@
 FROM python:3.10.11
 
 # Set the working directory in the container
-WORKDIR /valle_app
-COPY . .
+WORKDIR /app
 
 #RUN . venv/bin/activate
 # Install any needed packages specified in requirements.txt
-#RUN pip3 uninstall ffmpeg
-#RUN pip3 uninstall ffmpeg-python
-RUN apt-get update && pip3 install --upgrade pip 
-RUN pip3 install flask
+RUN apt-get update && apt-get install -y git && pip install --upgrade pip 
+RUN git clone https://github.com/SyntheticSpeech/VALL-E-X.git 
+WORKDIR VALL-E-X
+RUN git checkout deploy
+RUN pip install -r requirements.txt
+RUN pip install flask
 RUN apt-get -y install ffmpeg
-RUN pip3 install -r requirements.txt
 
 # Make port 80 available to the world outside this container
 EXPOSE 5000
@@ -21,4 +21,3 @@ ENV NAME World
 # Run app.py when the container launches
 ENTRYPOINT ["python3"]
 CMD ["app.py", "-m", "flask", "run", "--host=0.0.0.0"]
-#CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]
