@@ -77,7 +77,7 @@ def download_models():
     download_plachtaa_checkpoint()
     download_fine_tune_model()
 
-def preload_models():
+def load_model(model_option: str):
     global model, codec, vocos
     # VALL-E
     model = VALLE(
@@ -92,8 +92,7 @@ def preload_models():
         prepend_bos=True,
         num_quantizers=NUM_QUANTIZERS,
     ).to(device)
-    model_name = 'fine-tune'
-    checkpoint = torch.load(os.path.join(checkpoints_dir, model_checkpoint_name[model_name]), map_location='cpu')
+    checkpoint = torch.load(os.path.join(checkpoints_dir, model_checkpoint_name[model_option]), map_location='cpu')
     missing_keys, unexpected_keys = model.load_state_dict(
         checkpoint["model"], strict=True
     )
