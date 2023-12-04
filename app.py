@@ -107,8 +107,7 @@ def init():
             saved_prompts.add(os.path.splitext(os.path.basename(filename))[0])
 
     t1 = time.perf_counter(), time.process_time()
-    download_models()
-    # preload_models()
+    # download_models()
     # download_whisper()
     t2 = time.perf_counter(), time.process_time()
     print(f"[Init] Real time: {t2[0] - t1[0]:.2f} seconds")
@@ -116,4 +115,4 @@ def init():
 
 if __name__ == "__main__":
     init()
-    app.run(port=int(os.environ.get("PORT", 5000))) #debug=True
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000))) #debug=True
