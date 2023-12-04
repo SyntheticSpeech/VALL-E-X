@@ -2,13 +2,14 @@
 FROM python:3.10.13
 
 # Set the working directory in the container
-# WORKDIR /app
+WORKDIR /app
+COPY . /app
 
 #RUN . venv/bin/activate
 # Install any needed packages specified in requirements.txt
 RUN apt-get update && apt-get install -y git && pip install --upgrade pip 
-RUN git clone https://github.com/SyntheticSpeech/VALL-E-X.git 
-WORKDIR /VALL-E-X
+# RUN git clone https://github.com/SyntheticSpeech/VALL-E-X.git 
+# WORKDIR /VALL-E-X
 RUN git checkout deploy
 RUN pip install -r requirements.txt
 RUN pip install flask
