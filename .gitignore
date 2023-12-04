@@ -3,3 +3,4 @@ checkpoints/
 __pycache__/
 customs/
 uploads/
+static/cloned.wav

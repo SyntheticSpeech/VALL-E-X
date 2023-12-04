@@ -22,12 +22,11 @@
 
             <div class="form-group">
                 <label for="audioPrompt">Audio Prompt:</label>
-                <input type="file" id="audioPrompt" name="audioPrompt" accept="audio/*">
+                <input autocomplete="false" type="file" id="audioPrompt" name="audioPrompt" accept="audio/*">
             </div>
 
             <div class="form-group">
                 <label for="modelOption">Model:</label>
-                <!-- <input type="text" id="modelOption" name="modelOption"> -->
                 <select name="modelOption" id="modelOption">
                     <option value="pretrain">pretrain</option>
                     <option value="fine-tune">fine-tune</option>
