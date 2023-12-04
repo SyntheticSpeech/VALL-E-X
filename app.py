@@ -107,8 +107,8 @@ def init():
             saved_prompts.add(os.path.splitext(os.path.basename(filename))[0])
 
     t1 = time.perf_counter(), time.process_time()
-    # download_models()
-    # download_whisper()
+    download_models()
+    download_whisper()
     t2 = time.perf_counter(), time.process_time()
     print(f"[Init] Real time: {t2[0] - t1[0]:.2f} seconds")
     print(f"[Init] CPU time: {t2[1] - t1[1]:.2f} seconds")

@@ -8,9 +8,11 @@ COPY . /app
 #RUN . venv/bin/activate
 # Install any needed packages specified in requirements.txt
 RUN apt-get update && apt-get install -y git && pip install --upgrade pip 
+
 # RUN git clone https://github.com/SyntheticSpeech/VALL-E-X.git 
 # WORKDIR /VALL-E-X
-RUN git checkout deploy
+# RUN git checkout deploy
+
 RUN pip install -r requirements.txt
 RUN pip install flask
 RUN apt-get -y install ffmpeg
@@ -21,5 +23,5 @@ EXPOSE 5000
 ENV NAME World
 # Run app.py when the container launches
 ENTRYPOINT ["python"] 
-CMD ["app.py"]
+CMD ["app.py", "-m", "flask", "run"]
 #CMD ["app.py", "-m", "flask", "run", "--host=0.0.0.0"]
