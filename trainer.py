@@ -1042,6 +1042,7 @@ def run(rank, world_size, args):
 
     logging.info(f"Device: {device}")
     logging.info(params)
+    print(params.base_lr)
 
     logging.info("About to create model")
     model = get_model(params)
@@ -1065,7 +1066,7 @@ def run(rank, world_size, args):
 
     # freeze majority of the model
     freeze_model(model=model,train_stage=params.train_stage)
-
+    
     model.to(device)
     if world_size > 1:
         logging.info("Using DDP")
