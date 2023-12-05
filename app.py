@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from scipy.io.wavfile import write as write_wav
 
 from utils.generation import download_models, generate_audio, generate_audio_from_long_text, load_model
-from utils.prompt_making import make_prompt, download_whisper
+# from utils.prompt_making import make_prompt, download_whisper
 
 saved_prompts = set()
 
@@ -56,7 +56,8 @@ def upload_file():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         print(filepath)
-        make_prompt(name=name, audio_prompt_path=filepath)
+        # make_prompt(name=name, audio_prompt_path=filepath)
+        return render_template('error.html', error_message="Prompt making temporarily disabled.")
         saved_prompts.add(name)
         t_m_e = time.perf_counter(), time.process_time()
         print(f"[make_prompt] Real time: {t_m_e[0] - t_m_s[0]:.2f} seconds")
@@ -108,7 +109,7 @@ def init():
 
     t1 = time.perf_counter(), time.process_time()
     download_models()
-    download_whisper()
+    # download_whisper()
     t2 = time.perf_counter(), time.process_time()
     print(f"[Init] Real time: {t2[0] - t1[0]:.2f} seconds")
     print(f"[Init] CPU time: {t2[1] - t1[1]:.2f} seconds")

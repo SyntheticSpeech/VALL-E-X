@@ -3,8 +3,9 @@ import os
 import torch
 from vocos import Vocos
 import logging
-import langid
-langid.set_languages(['en', 'zh', 'ja'])
+# [Hao] Removed langid requirement, langid is always en in our case
+# import langid
+# langid.set_languages(['en', 'zh', 'ja'])
 
 import pathlib
 import platform
@@ -105,12 +106,12 @@ def load_model(model_option: str):
     vocos = Vocos.from_pretrained('charactr/vocos-encodec-24khz').to(device)
 
 @torch.no_grad()
-def generate_audio(text, prompt=None, language='auto', accent='no-accent'):
+def generate_audio(text, prompt=None, language='en', accent='no-accent'):
     global model, codec, vocos, text_tokenizer, text_collater
     text = text.replace("\n", "").strip(" ")
     # detect language
-    if language == "auto":
-        language = langid.classify(text)[0]
+    # if language == "auto":
+    #     language = langid.classify(text)[0]
     lang_token = lang2token[language]
     lang = token2lang[lang_token]
     text = lang_token + text + lang_token
@@ -179,8 +180,8 @@ def generate_audio_from_long_text(text, prompt=None, language='auto', accent='no
         mode = 'sliding-window'  # If no prompt is given, use sliding-window mode
     sentences = split_text_into_sentences(text)
     # detect language
-    if language == "auto":
-        language = langid.classify(text)[0]
+    # if language == "auto":
+    #     language = langid.classify(text)[0]
 
     # if initial prompt is given, encode it
     if prompt is not None and prompt != "":

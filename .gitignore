@@ -2,5 +2,5 @@ whisper/
 checkpoints/
 __pycache__/
 customs/
-uploads/
+# uploads/
 static/cloned.wav

@@ -21,8 +21,9 @@ else:
     pathlib.WindowsPath = pathlib.PosixPath
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
-import langid
-langid.set_languages(['en', 'zh', 'ja'])
+# [Hao] Removed langid requirement, langid is always en in our case
+# import langid
+# langid.set_languages(['en', 'zh', 'ja'])
 
 import nltk
 nltk.data.path = nltk.data.path + [os.path.join(os.getcwd(), "nltk_data")]
@@ -177,7 +178,7 @@ def make_npz_prompt(name, uploaded_audio, recorded_audio, transcript_content):
     if transcript_content == "":
         text_pr, lang_pr = make_prompt(name, wav_pr, sr, save=False)
     else:
-        lang_pr = langid.classify(str(transcript_content))[0]
+        lang_pr = 'en' # langid.classify(str(transcript_content))[0]
         lang_token = lang2token[lang_pr]
         text_pr = f"{lang_token}{str(transcript_content)}{lang_token}"
     # tokenize audio
@@ -244,14 +245,14 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, 
     if transcript_content == "":
         text_pr, lang_pr = make_prompt('dummy', wav_pr, sr, save=False)
     else:
-        lang_pr = langid.classify(str(transcript_content))[0]
+        lang_pr = 'en' # langid.classify(str(transcript_content))[0]
         lang_token = lang2token[lang_pr]
         text_pr = f"{lang_token}{str(transcript_content)}{lang_token}"
 
-    if language == 'auto-detect':
-        lang_token = lang2token[langid.classify(text)[0]]
-    else:
-        lang_token = langdropdown2token[language]
+    # if language == 'auto-detect':
+    lang_token = lang2token['en']# lang2token[langid.classify(text)[0]]
+    # else:
+    #     lang_token = langdropdown2token[language]
     lang = token2lang[lang_token]
     text = lang_token + text + lang_token
 
@@ -310,10 +311,11 @@ def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
     clear_prompts()
     model.to(device)
     # text to synthesize
-    if language == 'auto-detect':
-        lang_token = lang2token[langid.classify(text)[0]]
-    else:
-        lang_token = langdropdown2token[language]
+    # if language == 'auto-detect':
+    #     lang_token = lang2token[langid.classify(text)[0]]
+    # else:
+    #     lang_token = langdropdown2token[language]
+    lang_token = lang2token['en']
     lang = token2lang[lang_token]
     text = lang_token + text + lang_token
 
@@ -381,10 +383,11 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         mode = 'sliding-window'  # If no prompt is given, use sliding-window mode
     sentences = split_text_into_sentences(text)
     # detect language
-    if language == "auto-detect":
-        language = langid.classify(text)[0]
-    else:
-        language = token2lang[langdropdown2token[language]]
+    # if language == "auto-detect":
+    #     language = langid.classify(text)[0]
+    # else:
+    #     language = token2lang[langdropdown2token[language]]
+    language = 'en'
 
     # if initial prompt is given, encode it
     if prompt is not None and prompt != "":

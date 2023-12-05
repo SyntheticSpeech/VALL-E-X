@@ -12,9 +12,9 @@ RUN apt-get update && apt-get install -y git && pip install --upgrade pip
 # RUN git clone https://github.com/SyntheticSpeech/VALL-E-X.git 
 # WORKDIR /VALL-E-X
 # RUN git checkout deploy
-
-RUN pip install -r requirements.txt
-RUN pip install flask
+RUN pip3 install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+RUN pip3 install -r requirements_light.txt
+RUN pip3 install flask
 RUN apt-get -y install ffmpeg
 
 # Make port 80 available to the world outside this container
@@ -22,6 +22,6 @@ EXPOSE 5000
 # Define environment variable
 ENV NAME World
 # Run app.py when the container launches
-ENTRYPOINT ["python"] 
+ENTRYPOINT ["python3"] 
 CMD ["app.py", "-m", "flask", "run"]
 #CMD ["app.py", "-m", "flask", "run", "--host=0.0.0.0"]

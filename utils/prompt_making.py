@@ -2,10 +2,11 @@ import os
 import torch
 import torchaudio
 import logging
-import langid
 import whisper
 import time
-langid.set_languages(['en', 'zh', 'ja'])
+# [Hao] Removed langid requirement, langid is always en in our case
+# import langid
+# langid.set_languages(['en', 'zh', 'ja'])
 
 import numpy as np
 from data.tokenizer import (
