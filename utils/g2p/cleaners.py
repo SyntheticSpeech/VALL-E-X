@@ -1,23 +1,23 @@
 import re
-from utils.g2p.japanese import japanese_to_romaji_with_accent, japanese_to_ipa, japanese_to_ipa2, japanese_to_ipa3
-from utils.g2p.mandarin import number_to_chinese, chinese_to_bopomofo, latin_to_bopomofo, chinese_to_romaji, chinese_to_lazy_ipa, chinese_to_ipa, chinese_to_ipa2
+# from utils.g2p.japanese import japanese_to_romaji_with_accent, japanese_to_ipa, japanese_to_ipa2, japanese_to_ipa3
+# from utils.g2p.mandarin import number_to_chinese, chinese_to_bopomofo, latin_to_bopomofo, chinese_to_romaji, chinese_to_lazy_ipa, chinese_to_ipa, chinese_to_ipa2
 from utils.g2p.english import english_to_lazy_ipa, english_to_ipa2, english_to_lazy_ipa2
 patterns = [r'\[EN\](.*?)\[EN\]', r'\[ZH\](.*?)\[ZH\]', r'\[JA\](.*?)\[JA\]']
-def japanese_cleaners(text):
-    text = japanese_to_romaji_with_accent(text)
-    text = re.sub(r'([A-Za-z])$', r'\1.', text)
-    return text
+# def japanese_cleaners(text):
+#     text = japanese_to_romaji_with_accent(text)
+#     text = re.sub(r'([A-Za-z])$', r'\1.', text)
+#     return text
 
-def japanese_cleaners2(text):
-    return japanese_cleaners(text).replace('ts', 'ʦ').replace('...', '…')
+# def japanese_cleaners2(text):
+#     return japanese_cleaners(text).replace('ts', 'ʦ').replace('...', '…')
 
-def chinese_cleaners(text):
-    '''Pipeline for Chinese text'''
-    text = number_to_chinese(text)
-    text = chinese_to_bopomofo(text)
-    text = latin_to_bopomofo(text)
-    text = re.sub(r'([ˉˊˇˋ˙])$', r'\1。', text)
-    return text
+# def chinese_cleaners(text):
+#     '''Pipeline for Chinese text'''
+#     text = number_to_chinese(text)
+#     text = chinese_to_bopomofo(text)
+#     text = latin_to_bopomofo(text)
+#     text = re.sub(r'([ˉˊˇˋ˙])$', r'\1。', text)
+#     return text
 
 def cje_cleaners(text):
     matches = []
@@ -47,12 +47,12 @@ def cje_cleaners(text):
 
 
 def clean_one(text):
-    if text.find('[ZH]') != -1:
-        text = re.sub(r'\[ZH\](.*?)\[ZH\]',
-                      lambda x: chinese_to_ipa(x.group(1))+' ', text)
-    if text.find('[JA]') != -1:
-        text = re.sub(r'\[JA\](.*?)\[JA\]',
-                      lambda x: japanese_to_ipa2(x.group(1))+' ', text)
+    # if text.find('[ZH]') != -1:
+    #     text = re.sub(r'\[ZH\](.*?)\[ZH\]',
+    #                   lambda x: chinese_to_ipa(x.group(1))+' ', text)
+    # if text.find('[JA]') != -1:
+    #     text = re.sub(r'\[JA\](.*?)\[JA\]',
+    #                   lambda x: japanese_to_ipa2(x.group(1))+' ', text)
     if text.find('[EN]') != -1:
         text = re.sub(r'\[EN\](.*?)\[EN\]',
                       lambda x: english_to_ipa2(x.group(1))+' ', text)
