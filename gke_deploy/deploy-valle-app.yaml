@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: flask-app
 spec:
-  replicas: 1  # Adjust as needed
+  replicas: 1
   selector:
     matchLabels:
       app: flask-app
@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: <your-image>
+        image: renhao221122/valle-app:latest
         ports:
-        - containerPort: 5000  # Adjust as needed
+        - containerPort: 5000
