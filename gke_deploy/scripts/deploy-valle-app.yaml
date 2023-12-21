@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask-app
+  labels:
+    app: flask-app
 spec:
   replicas: 1
   selector:
@@ -14,6 +16,9 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: renhao221122/valle-app:latest
+        image: renhao221122/valle-app:gpu # !!! change version if using CPU
         ports:
         - containerPort: 5000
+        # resources: #!!! Comment out if using CPU
+        #   limits:
+        #     nvidia.com/gpu: 1
